@@ -18,11 +18,11 @@ class VotingView(generics.ListCreateAPIView):
     filter_fields = ('id', )
 
     def get(self, request, *args, **kwargs):
-        version = request.version
+      """   version = request.version
         if version not in settings.ALLOWED_VERSIONS:
             version = settings.DEFAULT_VERSION
         if version == 'v2':
-            self.serializer_class = SimpleVotingSerializer
+            self.serializer_class = SimpleVotingSerializer """
 
         return super().get(request, *args, **kwargs)
 

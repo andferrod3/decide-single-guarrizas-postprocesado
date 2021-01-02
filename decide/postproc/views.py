@@ -16,6 +16,15 @@ class PostProcView(APIView):
         out.sort(key=lambda x: -x['postproc'])
         return Response(out)
 
+     def multiPreguntas(self, questions):
+        for question in questions:
+            for opt in question:
+                opt['postproc'] = opt['votes'];
+
+            question.sort(key=lambda x: -x['postproc'])
+
+        return Response(questions)
+
     def post(self, request):
         """
          * type: IDENTITY | EQUALITY | WEIGHT
@@ -30,9 +39,14 @@ class PostProcView(APIView):
         """
 
         t = request.data.get('type', 'IDENTITY')
+        #groups = request.data.get('groups', False)
         opts = request.data.get('options', [])
 
         if t == 'IDENTITY':
             return self.identity(opts)
+
+        elif t == 'MULTIPREGUNTAS':
+            questions = request.data.get('questions', [])
+            return self.multiPreguntas(questions)
 
         return Response({})
