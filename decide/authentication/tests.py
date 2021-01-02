@@ -25,12 +25,6 @@ class AuthTestCase(APITestCase):
     def tearDown(self):
         self.client = None
 
-    def test_Voting_toString(self):
-        v = self.create_voting()
-        self.assertEquals(str(v),"test voting")
-        self.assertEquals(str(v.question),"test question")
-        self.assertEquals(str(v.question.options.all()[0]),"option 1 (2)")
-
     def test_login(self):
         data = {'username': 'voter1', 'password': '123'}
         response = self.client.post('/authentication/login/', data, format='json')
