@@ -35,7 +35,7 @@ class PostProcView(APIView):
                 valor = opt['votes'][i]*(maximo-i)
                 self.actualizar_resultados(opt, resultados, valor)
 
-        self.order(resultados)
+        resultados.sort(key=lambda x: -x['postproc'])
         out = {'resultados': resultados}
 
         return Response(out)
