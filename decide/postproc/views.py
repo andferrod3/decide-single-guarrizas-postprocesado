@@ -16,6 +16,20 @@ class PostProcView(APIView):
         out.sort(key=lambda x: -x['postproc'])
         return Response(out)
 
+    def borda(self, options):
+        resultados = []
+        maximo = len(options)
+
+        for opt in options:
+            for i in range(maximo):
+                valor = opt['votes'][i]*(maximo-i)
+                self.actualizar_resultados(opt, resultados, valor)
+
+        self.order(resultados)
+        out = {'resultados': resultados}
+
+        return Response(out)
+
     def post(self, request):
         """
          * type: IDENTITY | EQUALITY | WEIGHT
@@ -34,5 +48,8 @@ class PostProcView(APIView):
 
         if t == 'IDENTITY':
             return self.identity(opts)
+
+        elif t == 'BORDA':
+            return self.borda(opts)
 
         return Response({})
