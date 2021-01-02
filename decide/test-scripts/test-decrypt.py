@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys
+""" import sys
 from mixnet.mixcrypt import MixCrypt
 from mixnet.mixcrypt import ElGamal
 
@@ -14,4 +14,4 @@ a, b = map(int, MSG.split(','))
 k = MixCrypt(bits=256)
 k.k = ElGamal.construct((p, g, y, x))
 
-print(k.decrypt((a, b)))
+print(k.decrypt((a, b))) """
