@@ -16,6 +16,16 @@ class PostProcView(APIView):
         out.sort(key=lambda x: -x['postproc'])
         return Response(out)
 
+    def actualizar_resultados(self, opt, resultados, arg):
+        if not any(d.get('option', None) == opt['option'] for d in resultados):
+            resultados.append({
+                **opt,
+                'postproc': arg,
+            })
+        else:
+            aux = next((o for o in resultados if o['option'] == opt['option']), None)
+            aux['postproc'] = aux['postproc'] + arg
+
     def borda(self, options):
         resultados = []
         maximo = len(options)
