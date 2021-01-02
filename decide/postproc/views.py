@@ -16,7 +16,7 @@ class PostProcView(APIView):
         out.sort(key=lambda x: -x['postproc'])
         return Response(out)
 
-     def multiPreguntas(self, questions):
+    def multiPreguntas(self, questions):
         for question in questions:
             for opt in question:
                 opt['postproc'] = opt['votes'];
