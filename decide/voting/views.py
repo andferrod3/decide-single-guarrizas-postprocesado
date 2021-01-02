@@ -19,11 +19,6 @@ class VotingView(generics.ListCreateAPIView):
 
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
-      """   version = request.version
-        if version not in settings.ALLOWED_VERSIONS:
-            version = settings.DEFAULT_VERSION
-        if version == 'v2':
-            self.serializer_class = SimpleVotingSerializer """
 
     def post(self, request, *args, **kwargs):
         self.permission_classes = (UserIsStaff,)
