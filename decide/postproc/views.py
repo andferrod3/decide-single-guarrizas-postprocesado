@@ -50,4 +50,8 @@ class PostProcView(APIView):
         if t == 'IDENTITY':
             return self.identity(opts)
 
+        elif t == 'SAINTELAGUE':
+            seats = int(float(request.data.get('seats', '8')))
+            return self.sainteLague(opts, seats)
+
         return Response({})
