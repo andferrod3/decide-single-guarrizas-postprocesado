@@ -16,20 +16,19 @@ class PostProcView(APIView):
         out.sort(key=lambda x: -x['postproc'])
         return Response(out)
 
-    def sainteLague(self, options, seats):
-        #Se añade un campo de escaños (seats) a cada una de las opciones
-        for opt in options:
-            opt['seats'] = 0
+    def sainteLague(self,options,seats,census):
+        results = []
+        voters = sum(opt['votes'] for opt in options)
 
-        #Para cada uno de los escaños se calcula a que opción le correspondería el escaño 
-        #teniendo en cuenta los ya asignados
-        for i in range(seats):
-            max(options, 
-                key = lambda x : x['votes'] / (2 * x['seats'] + 1.0))['seats'] += 1
+        for seat in range(seats):
+            opt = self.maximum(options)
+            self.update_results(opt, results, 1)
+            aux = next((o for o in results if o['option'] == opt['option']), None)
+            opt['votes'] = aux['votes']//(2*aux['postproc'] +1)
 
-        #Se ordenan las opciones por el número de escaños
-        options.sort(key=lambda x: -x['seats'])
-        return Response(options)
+        part = self.participation(census, voters)
+        out = {'results': results, 'participation': part}
+        return Response(out)
 
     def post(self, request):
         """
@@ -51,7 +50,6 @@ class PostProcView(APIView):
             return self.identity(opts)
 
         elif t == 'SAINTELAGUE':
-            seats = int(float(request.data.get('seats', '8')))
-            return self.sainteLague(opts, seats)
+            return self.sainteLague(opts,seats,census)
 
         return Response({})
