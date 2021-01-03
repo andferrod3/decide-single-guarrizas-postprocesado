@@ -42,3 +42,41 @@ class PostProcTestCase(APITestCase):
 
         values = response.json()
         self.assertEqual(values, expected_result)
+
+
+    def test_parity(self):
+        data = {
+            'type': 'PARIDAD',
+            'questions': [
+                {
+                    'number': 1,
+                    'options': [
+                        {'option': 'Option 1', 'number': 1, 'votes': 6, 'gender': True},
+                        {'option': 'Option 2', 'number': 2, 'votes': 12, 'gender': True},
+                        {'option': 'Option 3', 'number': 3, 'votes': 21, 'gender': False},
+                        {'option': 'Option 4', 'number': 4, 'votes': 3, 'gender': False},
+                    ],
+                },
+            ],
+        }
+
+        expected_result = {
+            'type': 'PARIDAD',
+            'questions': [
+                {
+                    'number': 1,
+                    'options': [
+                        {'option': 'Option 3', 'number': 3, 'votes': 21, 'gender': False},
+                        {'option': 'Option 1', 'number': 2, 'votes': 12, 'gender': True},
+                        {'option': 'Option 2', 'number': 1, 'votes': 6, 'gender': True},
+                        {'option': 'Option 4', 'number': 4, 'votes': 3, 'gender': False},
+                    ],
+                },
+            ],
+        }
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
