@@ -43,27 +43,35 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
-    def test_sainte_lague(self):
+    def testSainteLague(self):
+        #Test de ejemplo
         data = {
             'type': 'SAINTELAGUE',
-            'seats': 7,
             'options': [
-                { 'option': 'Option 1', 'number': 1, 'votes': 340000 },
-                { 'option': 'Option 2', 'number': 2, 'votes': 280000 },
-                { 'option': 'Option 3', 'number': 3, 'votes': 160000 },
-                { 'option': 'Option 4', 'number': 4, 'votes': 60000 },
-            ]
+                { 'option': 'A', 'number': 1, 'votes': 391000 },
+                { 'option': 'B', 'number': 2, 'votes': 311000 },
+                { 'option': 'C', 'number': 3, 'votes': 184000 },
+                { 'option': 'D', 'number': 4, 'votes': 73000 },
+                { 'option': 'E', 'number': 5, 'votes': 27000 },
+                { 'option': 'F', 'number': 6, 'votes': 12000 },
+                { 'option': 'G', 'number': 7, 'votes': 2000 },
+            ],
+            'numEscanyos': 21,
         }
 
         expected_result = [
-            { 'option': 'Option 1', 'number': 1, 'votes': 340000, 'postproc': 3 },
-            { 'option': 'Option 2', 'number': 2, 'votes': 280000, 'postproc': 2 },
-            { 'option': 'Option 3', 'number': 3, 'votes': 160000, 'postproc': 1 },
-            { 'option': 'Option 4', 'number': 4, 'votes': 60000, 'postproc': 1 },
+            { 'option': 'A', 'number': 1, 'votes': 391000, 'escanyos': 8},
+            { 'option': 'B', 'number': 2, 'votes': 311000, 'escanyos': 6},
+            { 'option': 'C', 'number': 3, 'votes': 184000, 'escanyos': 4},
+            { 'option': 'D', 'number': 4, 'votes': 73000, 'escanyos': 2},
+            { 'option': 'E', 'number': 5, 'votes': 27000, 'escanyos': 1},
+            { 'option': 'F', 'number': 6, 'votes': 12000, 'escanyos': 0},
+            { 'option': 'G', 'number': 7, 'votes': 2000, 'escanyos': 0},
         ]
 
-        response = self.client.post('/postproc/', data, format='json')
-        self.assertEqual(response.status_code, 200)
+        result = self.views.metodoSainteLague(data)
 
-        values = response.json()
-        self.assertEqual(values, expected_result)
+        print('test Sainte-Lague')
+        print(result)
+
+        self.assertEqual(result, expected_result)
