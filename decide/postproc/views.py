@@ -15,6 +15,28 @@ class PostProcView(APIView):
 
         out.sort(key=lambda x: -x['postproc'])
         return Response(out)
+    
+    def participation(self, census, voters):
+        out = 0
+
+        if census != 0:
+            out = (voters/census)*100
+            out = round(out,2)
+
+        return out
+    
+    def maximum(self, options):
+        return max(options, key=lambda opt: opt['votes'])
+
+    def update_results(self, opt, results, arg):
+        if not any(d.get('option', None) == opt['option'] for d in results):
+            results.append({
+                **opt,
+                'postproc': arg,
+            })
+        else:
+            aux = next((o for o in results if o['option'] == opt['option']), None)
+            aux['postproc'] = aux['postproc'] + arg
 
     def sainteLague(self,options,seats,census):
         results = []
