@@ -15,6 +15,9 @@ class PostProcView(APIView):
 
         out.sort(key=lambda x: -x['postproc'])
         return Response(out)
+    
+    def order(self, resultados):
+        resultados.sort(key=lambda x: -x['postproc'])
 
     def actualizar_resultados(self, opt, resultados, arg):
         if not any(d.get('option', None) == opt['option'] for d in resultados):
@@ -35,7 +38,7 @@ class PostProcView(APIView):
                 valor = opt['votes'][i]*(maximo-i)
                 self.actualizar_resultados(opt, resultados, valor)
 
-        resultados.sort(key=lambda x: -x['postproc'])
+        self.order(resultados)
         out = {'resultados': resultados}
 
         return Response(out)
