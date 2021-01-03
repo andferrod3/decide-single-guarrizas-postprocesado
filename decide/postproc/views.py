@@ -68,17 +68,7 @@ class PostProcView(APIView):
 
 
     def post(self, request):
-        """
-         * type: IDENTITY | EQUALITY | WEIGHT
-         * options: [
-            {
-             option: str,
-             number: int,
-             votes: int,
-             ...extraparams
-            }
-           ]
-        """
+        
 
         t = request.data.get('type', 'IDENTITY')
         opts = request.data.get('options', [])
