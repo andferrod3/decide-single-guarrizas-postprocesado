@@ -43,26 +43,30 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
-    def test_borda(self):
+    def test_sainte_lague(self):
         data = {
-            'type': 'BORDA',
-            'census': 10,
-            'options': [
-                { 'option': 'Option 1', 'number': 1, 'votes': [5, 2, 3] },
-                { 'option': 'Option 2', 'number': 2, 'votes': [5, 0, 5] },
-                { 'option': 'Option 3', 'number': 3, 'votes': [3, 1, 6] },
+            "type": "SAINTELAGUE",
+            "seats": "20",
+            "options": [
+                { "option": "Option 1", "number": 1, "votes": 5 },
+                { "option": "Option 2", "number": 2, "votes": 0 },
+                { "option": "Option 3", "number": 3, "votes": 3 },
+                { "option": "Option 4", "number": 4, "votes": 2 },
+                { "option": "Option 5", "number": 5, "votes": 5 },
+                { "option": "Option 6", "number": 6, "votes": 1 },
             ]
         }
 
-        expected_result = {
-            'results': [
-                { 'option': 'Option 1', 'number': 1, 'votes': [5, 2, 3], 'postproc': 22 },
-                { 'option': 'Option 2', 'number': 2, 'votes': [5, 0, 5], 'postproc': 20 },
-                { 'option': 'Option 3', 'number': 3, 'votes': [3, 1, 6], 'postproc': 17 },
-            ],
-        }
+        expected_result = [
+            { "option": "Option 1", "number": 1, "votes": 5, "seats": 6 },
+            { "option": "Option 5", "number": 5, "votes": 5, "seats": 6 },
+            { "option": "Option 3", "number": 3, "votes": 3, "seats": 4 },
+            { "option": "Option 4", "number": 4, "votes": 2, "seats": 3 },
+            { "option": "Option 6", "number": 6, "votes": 1, "seats": 1 },
+            { "option": "Option 2", "number": 2, "votes": 0, "seats": 0 },
+        ]
 
-        response = self.client.post('/postproc/', data, format='json')
+        response = self.client.post("/postproc/", data, format="json")
         self.assertEqual(response.status_code, 200)
 
         values = response.json()

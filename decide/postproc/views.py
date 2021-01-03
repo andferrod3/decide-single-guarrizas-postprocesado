@@ -15,33 +15,21 @@ class PostProcView(APIView):
 
         out.sort(key=lambda x: -x['postproc'])
         return Response(out)
-    
-    def order(self, resultados):
-        resultados.sort(key=lambda x: -x['postproc'])
 
-    def actualizar_resultados(self, opt, resultados, arg):
-        if not any(d.get('option', None) == opt['option'] for d in resultados):
-            resultados.append({
-                **opt,
-                'postproc': arg,
-            })
-        else:
-            aux = next((o for o in resultados if o['option'] == opt['option']), None)
-            aux['postproc'] = aux['postproc'] + arg
-
-    def borda(self, options):
-        resultados = []
-        maximo = len(options)
-
+    def sainteLague(self, options, seats):
+        #Se añade un campo de escaños (seats) a cada una de las opciones
         for opt in options:
-            for i in range(maximo):
-                valor = opt['votes'][i]*(maximo-i)
-                self.actualizar_resultados(opt, resultados, valor)
+            opt['seats'] = 0
 
-        self.order(resultados)
-        out = {'resultados': resultados}
+        #Para cada uno de los escaños se calcula a que opción le correspondería el escaño 
+        #teniendo en cuenta los ya asignados
+        for i in range(seats):
+            max(options, 
+                key = lambda x : x['votes'] / (2 * x['seats'] + 1.0))['seats'] += 1
 
-        return Response(out)
+        #Se ordenan las opciones por el número de escaños
+        options.sort(key=lambda x: -x['seats'])
+        return Response(options)
 
     def post(self, request):
         """
@@ -61,8 +49,5 @@ class PostProcView(APIView):
 
         if t == 'IDENTITY':
             return self.identity(opts)
-
-        elif t == 'BORDA':
-            return self.borda(opts)
 
         return Response({})
