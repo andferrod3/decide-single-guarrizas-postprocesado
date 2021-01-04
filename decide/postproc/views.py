@@ -57,9 +57,68 @@ class PostProcView(APIView):
                 x.update({'escanosImp' : 0})
             return Response(options)
 
+    def HuntingtonHill(self,options,numEscanos):
+
+        votosTotales = 0
+        for x in options:
+            votosTotales += x['votes']
+
+        limite = votosTotales/numEscanos
+
+        #Crear parametros para metodo rounding rule
+        rounding = limite*0.001
+        lower = limite-rounding
+        upper = limite+rounding
+
+        numEscanosAsig = 0
+
+        while(numEscanosAsig != numEscanos):
+
+            #si llegamos a aplicar rounding rule y no llegamos al numero igual de escanos, 
+            #reseteamos de nuevo el numero de escanos asig y empezamos de nuevo
+            numEscanosAsig = 0
+
+            for x in options:
+
+                if(x['votes']<limite):
+                    x['escanos']=0
+                else:
+                    cuota = x['votes']/limite
+                    
+                    if(isinstance(cuota,int)):
+                        x['escanos']=cuota
+                    else:
+                        #Calculamos las cotas superior e inferior de la cuota y despues la media geometrica
+                        lQ = int(cuota)
+                        mediaG = math.sqrt(lQ*(lQ+1))
+
+                        if(cuota > mediaG):
+                            x['escanos']=(lQ+1)
+                        else:
+                            x['escanos']=lQ
+            
+                numEscanosAsig += x['escanos']
+
+            #Huntington-Hill Rounding Rule
+            #For a quota q, let L denote its lower quota, U its upper quota, and G the
+            #geometric mean of L and U. If then round q down to L, otherwise
+            #round q up to U.
+
+            if(numEscanosAsig < numEscanos):
+                limite = lower
+                lower = limite-rounding
+                upper = limite+rounding
+
+            else:
+                limite = upper
+                lower = limite-rounding
+                upper = limite+rounding
+        
+        return Response(options)
+
     def post(self, request):
         """
-         * type: IDENTITY | EQUALITY | WEIGHT
+         * type: IDENTITY | IMPERIALI | HUNTINGTONHILL | 
          * options: [
             {
              option: str,
@@ -67,6 +126,7 @@ class PostProcView(APIView):
              votes: int,
              ...extraparams
             }
+         * escanos   
            ]
         """
 
@@ -78,5 +138,7 @@ class PostProcView(APIView):
             return self.identity(opts)
         elif t == 'IMPERIALI':
             return self.imperialiYResiduo(numEscanos, opts)
+        elif t == 'HUNTINGTONHILL':
+            return self.HuntingtonHill(opts,numEscanos)
 
         return Response({})
