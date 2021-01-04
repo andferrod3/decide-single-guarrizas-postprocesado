@@ -19,6 +19,9 @@ class QuestionOption(models.Model):
     number = models.PositiveIntegerField(blank=True, null=True)
     option = models.TextField()
 
+    BOOL_CHOICES = ((True, 'Hombre'), (False, 'Mujer'))
+    genero = models.NullBooleanField(blank=True, null=True, choices=BOOL_CHOICES)
+
     def save(self):
         if not self.number:
             self.number = self.question.options.count() + 2
@@ -110,7 +113,8 @@ class Voting(models.Model):
             opts.append({
                 'option': opt.option,
                 'number': opt.number,
-                'votes': votes
+                'votes': votes,
+                'genero': opt.genero,
             })
 
         data = { 'type': 'IDENTITY', 'options': opts }
