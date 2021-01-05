@@ -42,6 +42,7 @@ class PostProcTestCase(APITestCase):
 
         values = response.json()
         self.assertEqual(values, expected_result)
+<<<<<<< HEAD
     
     def testImperialiFunciona(self):
         #Test de ejemplo
@@ -70,11 +71,34 @@ class PostProcTestCase(APITestCase):
         ]
 
         response = self.client.post('/postproc/', data, format='json')
+=======
+
+    def test_danish1(self):
+        data = {
+            "type": "DANISH",
+            "options": [
+                { "option": "Option 1", "number": 1, "votes": 25244},
+                { "option": "Option 2", "number": 2, "votes": 45784},
+                { "option": "Option 3", "number": 3, "votes": 101366}
+            ], 
+            'numEscanos': 3
+
+        }
+
+        expected_result = [
+            { "option": "Option 1", "number": 1, "votes": 25244, "escanyos": 0 },
+            { "option": "Option 2", "number": 2, "votes": 45784, "escanyos": 1 },
+            { "option": "Option 3", "number": 3, "votes": 101366, "escanyos": 2 }
+        ]
+
+        response = self.client.post("/postproc/", data, format="json")
+>>>>>>> conmarred
         self.assertEqual(response.status_code, 200)
 
         values = response.json()
         self.assertEqual(values, expected_result)
 
+<<<<<<< HEAD
 
     def testHuntington(self):
         data = {
@@ -100,3 +124,30 @@ class PostProcTestCase(APITestCase):
 
         values = response.json()
         self.assertEqual(values, expected_result)
+=======
+    def test_danish2(self):
+        data = {
+            "type": "DANISH",
+            "options": [
+                { "option": "Option 1", "number": 1, "votes": 25244},
+                { "option": "Option 2", "number": 2, "votes": 45784},
+                { "option": "Option 3", "number": 3, "votes": 101366}
+            ], 
+            'numEscanos': 4
+
+        }
+
+        expected_result = [
+            { "option": "Option 1", "number": 1, "votes": 25244, "escanyos": 1 },
+            { "option": "Option 2", "number": 2, "votes": 45784, "escanyos": 1 },
+            { "option": "Option 3", "number": 3, "votes": 101366, "escanyos": 2 },
+        ]
+
+        response = self.client.post("/postproc/", data, format="json")
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+    
+    
+>>>>>>> conmarred
