@@ -268,3 +268,32 @@ class PostProcTestCase(APITestCase):
 
         values = response.json()
         self.assertEqual(values, expected_result)
+
+    def testDHont(self):
+        data = {
+            'type': 'DHONT',
+            'options': [
+                {'option':'OPT1','number':1,'votes': 12000},
+                {'option':'OPT2','number':2,'votes': 140000},
+                {'option':'OPT3','number':3,'votes': 110000},
+                {'option':'OPT4','number':4,'votes': 205000},
+                {'option':'OPT5','number':5,'votes': 150000},
+                {'option':'OPT6','number':6,'votes': 16000}
+            ],
+            'numEscanos': 10
+        }
+
+        expected_result = [
+            {'option':'OPT1','number':1,'votes': 12000, 'escanos': 0},
+            {'option':'OPT2','number':2,'votes': 140000, 'escanos': 2},
+            {'option':'OPT3','number':3,'votes': 110000, 'escanos': 2},
+            {'option':'OPT4','number':4,'votes': 205000, 'escanos': 4},
+            {'option':'OPT5','number':5,'votes': 150000, 'escanos': 2},
+            {'option':'OPT6','number':6,'votes': 16000, 'escanos': 0}
+        ]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)

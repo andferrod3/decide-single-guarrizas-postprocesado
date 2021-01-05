@@ -16,15 +16,15 @@ MODULES = [
 BASEURL = 'http://localhost:8001'
 
 APIS = {
-    'authentication': 'http://localhost:8001',
-    'base': 'http://localhost:8001',
-    'booth': 'http://localhost:8001',
-    'census': 'http://localhost:8001',
-    'mixnet': 'http://localhost:8001',
-    'postproc': 'http://localhost:8001',
-    'store': 'http://localhost:8001',
-    'visualizer': 'http://localhost:8001',
-    'voting': 'http://localhost:8001',
+    'authentication': BASEURL,
+    'base': BASEURL,   
+    'booth': BASEURL,
+    'census': BASEURL,
+    'mixnet': BASEURL,
+    'postproc': BASEURL,
+    'store': BASEURL,
+    'visualizer': BASEURL,
+    'voting': BASEURL,
 }
 
 
