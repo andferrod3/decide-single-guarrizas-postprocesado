@@ -17,53 +17,24 @@ class PostProcView(APIView):
         out.sort(key=lambda x: -x['postproc'])
         return Response(out)
 
-    def sainteLague(self, listaEscaños, escañosTotales):
-
-        numEscañosRepartidos  = 0
+    def saintelague(self,options,escanos):
+        results = []
+        for opt in options:
+            results.append({
+                    **opt,
+                    'postproc': 0,
+                })
+        for i in range(escanos):
+            maximo = max(options, key=lambda opt: opt['votes'])
+            ganador_escano = next((o for o in results if o['option'] == maximo['option']), None)
+            ganador_escano['postproc'] = ganador_escano['postproc'] + 1
+            ganador_escano = next((o for o in results if o['option'] == maximo['option']), None)
+            maximo['votes'] = ganador_escano['votes']//(2*ganador_escano['postproc'] +1)
         
-        #inicializamos la lista con el num de escaños y cociente por partido a 0
-        for x in listaEscaños:
-             x.update({ 
-                        'cociente' : 0,
-                        'escanyos' : 0 })
-
-
-        #Hacer lo siguiente HASTA que el numero de escaños repartidos y el real sean el mismo
-        while(numEscañosRepartidos != escañosTotales):
-
-            #Calculamos en primer lugar los cocientes para cada partido en la iteracion
-            for x in listaEscaños:
-
-                    esc = int(x.get('escanyos'))
-                    ci = x.get('votes')/(2*esc+1)
-                    print(ci)
-                    x.update({ 'cociente' : ci})
-
-                
-            mayor_cociente = 0 
-
-            #Una vez hecho esto, sacamos el mayor cociente de todos en esta iteracion
-            for x in listaEscaños:
-               if(x.get('cociente') > mayor_cociente):
-                   mayor_cociente = x.get('cociente')
-
-            #Finalmente, vemos a que partido pertenece dicho cociente mayor y, en caso de ser el suyo,
-            #se le otorga como ganador 1 escaño mas y ninguno al resto de partidos
-            for x in listaEscaños:
-               if(x.get('cociente') == mayor_cociente):
-                   x.update({'escanyos':x.get('escanyos')+1})
-                
-               else:
-                   x.update({'escanyos':x.get('escanyos')})
-                
-            numEscañosRepartidos =  numEscañosRepartidos + 1
-        
-        #Finalmente le damos el formato de la coleccion que recibe el test para hacer la comprobaciones pertinentes
-        #y eliminamos el campo cociente
-        for x in listaEscaños:
-            x.pop('cociente')
-
-        return listaEscaños
+        results.sort(key=lambda x: -x['postproc'])
+        out = {'results': results}
+        print(results)
+        return Response(out)
 
     def post(self, request):
         """
@@ -80,17 +51,12 @@ class PostProcView(APIView):
 
         t = request.data.get('type', 'IDENTITY')
         opts = request.data.get('options', [])
+        escanos = request.data.get('escanos')
 
         if t == 'IDENTITY':
             return self.identity(opts)
+        
+        elif t == 'SAINTELAGUE':
+            return self.saintelague(opts,escanos)
 
         return Response({})
-
-    def metodoSainteLague(self, data):
-        t = data.get('type')
-        lista = data.get('options')
-        escañosTotales = data.get('numEscanyos')
-        if(t == 'SAINTELAGUE'):
-            return self.sainteLague(lista,escañosTotales)
-        else:
-            return {}
