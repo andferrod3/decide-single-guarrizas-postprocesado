@@ -70,7 +70,11 @@ class PostProcTestCase(APITestCase):
             { 'option': 'G', 'number': 7, 'votes': 2000, 'escanosImp': 0},
         ]
 
-        response = self.client.post('/postproc/', data, format='json')
+        response = self.client.post("/postproc/", data, format="json")
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
 
 
     def test_danish1(self):
