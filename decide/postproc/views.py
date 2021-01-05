@@ -165,10 +165,10 @@ class PostProcView(APIView):
         if t == 'IDENTITY':
             return self.identity(opts)
         elif t == 'IMPERIALI':
-            return self.imperialiYResiduo(numEscanos, opts)
+            return self.imperialiYResiduo(numEscanos=numEscanos, options=opts)
         elif t == 'HUNTINGTONHILL':
-            return self.HuntingtonHill(opts,numEscanos)
+            return self.HuntingtonHill(options=opts, numEscanos=numEscanos)
         elif t == 'DHONT':
-            return self.dHont(opts, numEscanos)
+            return self.dHont(options=opts, numEscanos=numEscanos)
 
         return Response({})
