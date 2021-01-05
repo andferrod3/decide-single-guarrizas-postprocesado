@@ -2,9 +2,6 @@ from django.db import models
 from rest_framework.views import APIView
 from rest_framework.response import Response
 import math
-
-
-import math
 import numpy as np
 
 
