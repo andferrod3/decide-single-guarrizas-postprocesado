@@ -23,6 +23,16 @@ class PostProcView(APIView):
         return Response(out)
 
 
+    def multiPreguntas(self, questions):
+        for question in questions:
+            for opt in question:
+                opt['postproc'] = opt['votes'];
+
+            question.sort(key=lambda x: -x['postproc'])
+
+        return Response(questions)
+
+
     def imperialiYResiduo(self, numEscanos, options):
 
         votosTotales = 0
@@ -193,6 +203,7 @@ class PostProcView(APIView):
         return Response(options)
 
 
+
     def post(self, request):
         """
          * type: IDENTITY | IMPERIALI | HUNTINGTONHILL | 
@@ -208,6 +219,7 @@ class PostProcView(APIView):
         """
 
         t = request.data.get('type', 'IDENTITY')
+        #groups = request.data.get('groups', False)
         opts = request.data.get('options', [])
         numEscanos = request.data.get('numEscanos', 0)
         
@@ -221,6 +233,8 @@ class PostProcView(APIView):
             return self.danish(opts, numEscanos)
         elif t == 'DHONT':
             return self.dHont(options=opts, numEscanos=numEscanos)
-
+        elif t == 'MULTIPREGUNTAS':
+            questions = request.data.get('questions', [])
+            return self.multiPreguntas(questions)
 
         return Response({})
