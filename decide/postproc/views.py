@@ -116,6 +116,36 @@ class PostProcView(APIView):
         
         return Response(options)
 
+    def dHont(self, options, numEscanos):
+        #Lista de tamaño igual al número de opciones. Representa el número de escaños de cada opción, ordenados en la misma forma.
+        res = []
+
+        for i in range(0, len(options)):
+            #Inicializamos todo a 0
+            res.append(0)
+        
+        #Para cada escaño, vamos a recorrer todas las opciones, usando la fórmula de d'Hont: número de votos a esa opción / (número de escaños asignados a esa opción + 1)
+        for escaño in range(0, numEscanos):
+             #Lista de tamaño igual al número de opciones. Representa el recuento al aplicar la fórmula de cada opción, ordenados en la misma forma.
+            recuento = []
+            for i in range(0, len(options)):
+                option = options[i]
+                r = option['votes'] / (res[i]+1)
+                recuento.append(r)
+            
+            #Obtenemos el índice del máximo valor en la lista de recuento de votos, es decir, el índice del ganador del escaño
+            ganador = recuento.index(max(recuento))
+            #Al estar ordenadas de la misma forma, en la posicion del ganador le sumamos 1 escaño
+            res[ganador] += 1
+
+        #Para cada opción, le asignamos los escaños en el nuevo campo escanos
+        for i in range(0, len(res)):
+            option = options[i]
+            option['escanos'] = res[i]
+
+        return Response(options)
+
+
     def post(self, request):
         """
          * type: IDENTITY | IMPERIALI | HUNTINGTONHILL | 
@@ -140,5 +170,7 @@ class PostProcView(APIView):
             return self.imperialiYResiduo(numEscanos, opts)
         elif t == 'HUNTINGTONHILL':
             return self.HuntingtonHill(opts,numEscanos)
+        elif t == 'DHONT':
+            return self.dHont(opts, numEscanos)
 
         return Response({})
