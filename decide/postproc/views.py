@@ -63,62 +63,68 @@ class PostProcView(APIView):
                 x.update({'escanosImp' : 0})
             return Response(options)
 
-    def HuntingtonHill(self,options,numEscanos):
+    def HuntingtonHill(self,numEscanos,options):
 
         votosTotales = 0
         for x in options:
             votosTotales += x['votes']
+        
+        if votosTotales > 0 and numEscanos > 0:
 
-        limite = votosTotales/numEscanos
+            limite = votosTotales/numEscanos
 
-        #Crear parametros para metodo rounding rule
-        rounding = limite*0.001
-        lower = limite-rounding
-        upper = limite+rounding
+            #Crear parametros para metodo rounding rule
+            rounding = limite*0.001
+            lower = limite-rounding
+            upper = limite+rounding
 
-        numEscanosAsig = 0
-
-        while(numEscanosAsig != numEscanos):
-
-            #si llegamos a aplicar rounding rule y no llegamos al numero igual de escanos, 
-            #reseteamos de nuevo el numero de escanos asig y empezamos de nuevo
             numEscanosAsig = 0
 
-            for x in options:
+            while(numEscanosAsig != numEscanos):
 
-                if(x['votes']<limite):
-                    x['escanos']=0
-                else:
-                    cuota = x['votes']/limite
-                    
-                    if(isinstance(cuota,int)):
-                        x['escanos']=cuota
+                #si llegamos a aplicar rounding rule y no llegamos al numero igual de escanos, 
+                #reseteamos de nuevo el numero de escanos asig y empezamos de nuevo
+                numEscanosAsig = 0
+
+                for x in options:
+
+                    if(x['votes']<limite):
+                        x['escanos']=0
                     else:
-                        #Calculamos las cotas superior e inferior de la cuota y despues la media geometrica
-                        lQ = int(cuota)
-                        mediaG = math.sqrt(lQ*(lQ+1))
-
-                        if(cuota > mediaG):
-                            x['escanos']=(lQ+1)
+                        cuota = x['votes']/limite
+                        
+                        if(isinstance(cuota,int)):
+                            x['escanos']=cuota
                         else:
-                            x['escanos']=lQ
-            
-                numEscanosAsig += x['escanos']
+                            #Calculamos las cotas superior e inferior de la cuota y despues la media geometrica
+                            lQ = int(cuota)
+                            mediaG = math.sqrt(lQ*(lQ+1))
 
-            #Huntington-Hill Rounding Rule
-            #For a quota q, let L denote its lower quota, U its upper quota, and G the
-            #geometric mean of L and U. If then round q down to L, otherwise
-            #round q up to U.
+                            if(cuota > mediaG):
+                                x['escanos']=(lQ+1)
+                            else:
+                                x['escanos']=lQ
+                
+                    numEscanosAsig += x['escanos']
 
-            if(numEscanosAsig < numEscanos):
-                limite = lower
-                lower = limite-rounding
-                upper = limite+rounding
+                #Huntington-Hill Rounding Rule
+                #For a quota q, let L denote its lower quota, U its upper quota, and G the
+                #geometric mean of L and U. If then round q down to L, otherwise
+                #round q up to U.
 
-            else:
-                limite = upper
-                lower = limite-rounding
-                upper = limite+rounding
+                if(numEscanosAsig < numEscanos):
+                    limite = lower
+                    lower = limite-rounding
+                    upper = limite+rounding
+
+                else:
+                    limite = upper
+                    lower = limite-rounding
+                    upper = limite+rounding
+        else:
+            for x in options:
+                x.update({'escanos' : 0})
+            return Response(options)
         
         return Response(options)
 =======
@@ -165,6 +171,28 @@ class PostProcView(APIView):
        
 >>>>>>> conmarred
 
+    def dHont(self, options, numEscanos):
+
+        #Añadimos un campo para el contador de escaños asignados a cada opción.
+        for option in options:
+            option['escanos'] = 0
+        
+        #Para cada escaño, vamos a recorrer todas las opciones, usando la fórmula de d'Hont: número de votos a esa opción / (número de escaños asignados a esa opción + 1)
+        for escano in range(0, numEscanos):
+             #Lista de tamaño igual al número de opciones. Representa el recuento al aplicar la fórmula de cada opción, ordenados en la misma forma.
+            recuento = []
+            for option in options:
+                r = option['votes'] / (option['escanos']+1)
+                recuento.append(r)
+            
+            #Obtenemos el índice del máximo valor en la lista de recuento de votos, es decir, el índice del ganador del escaño
+            ganador = recuento.index(max(recuento))
+            #Al estar ordenadas de la misma forma, en la posicion del ganador le sumamos 1 escaño
+            options[ganador]['escanos'] += 1
+
+        return Response(options)
+
+
     def post(self, request):
         """
          * type: IDENTITY | IMPERIALI | HUNTINGTONHILL | 
@@ -173,9 +201,9 @@ class PostProcView(APIView):
              option: str,
              number: int,
              votes: int,
-             ...extraparams
+             escanos: int
             }
-         * escanos   
+        
            ]
         """
 
@@ -187,13 +215,19 @@ class PostProcView(APIView):
             return self.identity(opts)
 <<<<<<< HEAD
         elif t == 'IMPERIALI':
-            return self.imperialiYResiduo(numEscanos, opts)
+            return self.imperialiYResiduo(numEscanos=numEscanos, options=opts)
         elif t == 'HUNTINGTONHILL':
+<<<<<<< HEAD
             return self.HuntingtonHill(opts,numEscanos)
 =======
         elif t== 'DANISH':
             return self.danish(opts, numEscanos)
 
 >>>>>>> conmarred
+=======
+            return self.HuntingtonHill(options=opts, numEscanos=numEscanos)
+        elif t == 'DHONT':
+            return self.dHont(options=opts, numEscanos=numEscanos)
+>>>>>>> 5563cb7c06fcf8e6c580d58b23d8f8a66dd9257e
 
         return Response({})
