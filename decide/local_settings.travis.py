@@ -13,18 +13,18 @@ MODULES = [
 ]
 
 APIS = {
-    'authentication': 'http://localhost:8000',
-    'base': 'http://localhost:8000',
-    'booth': 'http://localhost:8000',
-    'census': 'http://localhost:8000',
-    'mixnet': 'http://localhost:8000',
-    'postproc': 'http://localhost:8000',
-    'store': 'http://localhost:8000',
-    'visualizer': 'http://localhost:8000',
-    'voting': 'http://localhost:8000',
+    'authentication': 'http://localhost:8001',
+    'base': 'http://localhost:8001',
+    'booth': 'http://localhost:8001',
+    'census': 'http://localhost:8001',
+    'mixnet': 'http://localhost:8001',
+    'postproc': 'http://localhost:8001',
+    'store': 'http://localhost:8001',
+    'visualizer': 'http://localhost:8001',
+    'voting': 'http://localhost:8001',
 }
 
-BASEURL = 'http://localhost:8000'
+BASEURL = 'http://localhost:8001'
 
 DATABASES = {
     'default': {
