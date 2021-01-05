@@ -42,7 +42,7 @@ class PostProcTestCase(APITestCase):
 
         values = response.json()
         self.assertEqual(values, expected_result)
-<<<<<<< HEAD
+
     
     def testImperialiFunciona(self):
         #Test de ejemplo
@@ -71,7 +71,7 @@ class PostProcTestCase(APITestCase):
         ]
 
         response = self.client.post('/postproc/', data, format='json')
-=======
+
 
     def test_danish1(self):
         data = {
@@ -92,18 +92,15 @@ class PostProcTestCase(APITestCase):
         ]
 
         response = self.client.post("/postproc/", data, format="json")
->>>>>>> conmarred
+
         self.assertEqual(response.status_code, 200)
 
         values = response.json()
         self.assertEqual(values, expected_result)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-=======
     #Prueba 1 con datos de ej de Wikipedia
->>>>>>> 5563cb7c06fcf8e6c580d58b23d8f8a66dd9257e
+
     def testHuntington(self):
         data = {
             'type': 'HUNTINGTONHILL',
@@ -464,7 +461,7 @@ class PostProcTestCase(APITestCase):
 
         values = response.json()
         self.assertEqual(values, expected_result)
-=======
+
     def test_danish2(self):
         data = {
             "type": "DANISH",
@@ -489,5 +486,4 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
     
-    
->>>>>>> conmarred
+ 
