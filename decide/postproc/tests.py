@@ -46,24 +46,19 @@ class PostProcTestCase(APITestCase):
     def test_danish(self):
         data = {
             "type": "DANISH",
-            "seats": "8",
             "options": [
-                { "option": "Option 1", "number": 1, "votes": 5 },
-                { "option": "Option 2", "number": 2, "votes": 0 },
-                { "option": "Option 3", "number": 3, "votes": 3 },
-                { "option": "Option 4", "number": 4, "votes": 2 },
-                { "option": "Option 5", "number": 5, "votes": 5 },
-                { "option": "Option 6", "number": 6, "votes": 1 },
-            ]
+                { "option": "Option 1", "number": 1, "votes": 25244},
+                { "option": "Option 2", "number": 2, "votes": 45784},
+                { "option": "Option 3", "number": 3, "votes": 101366}
+            ], 
+            'numEscanos': 3
+
         }
 
         expected_result = [
-            { "option": "Option 1", "number": 1, "votes": 5, "seats": 2 },
-            { "option": "Option 3", "number": 3, "votes": 3, "seats": 2 },
-            { "option": "Option 5", "number": 5, "votes": 5, "seats": 2 },
-            { "option": "Option 4", "number": 4, "votes": 2, "seats": 1 },
-            { "option": "Option 6", "number": 6, "votes": 1, "seats": 1 },
-            { "option": "Option 2", "number": 2, "votes": 0, "seats": 0 },
+            { "option": "Option 1", "number": 1, "votes": 25244, "escanyos": 0 },
+            { "option": "Option 2", "number": 2, "votes": 45784, "escanyos": 1 },
+            { "option": "Option 3", "number": 3, "votes": 101366, "escanyos": 2 }
         ]
 
         response = self.client.post("/postproc/", data, format="json")
@@ -72,3 +67,5 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
+    
+    
