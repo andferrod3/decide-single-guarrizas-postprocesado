@@ -22,7 +22,7 @@ class PostProcView(APIView):
         out.sort(key=lambda x: -x['postproc'])
         return Response(out)
 
-<<<<<<< HEAD
+
     def imperialiYResiduo(self, numEscanos, options):
 
         votosTotales = 0
@@ -127,7 +127,7 @@ class PostProcView(APIView):
             return Response(options)
         
         return Response(options)
-=======
+
 
     def danish(self, options, escañosTotales):
 
@@ -169,7 +169,7 @@ class PostProcView(APIView):
         
         return Response(options)
        
->>>>>>> conmarred
+
 
     def dHont(self, options, numEscanos):
 
@@ -213,21 +213,17 @@ class PostProcView(APIView):
         
         if t == 'IDENTITY':
             return self.identity(opts)
-<<<<<<< HEAD
+
         elif t == 'IMPERIALI':
             return self.imperialiYResiduo(numEscanos=numEscanos, options=opts)
         elif t == 'HUNTINGTONHILL':
-<<<<<<< HEAD
             return self.HuntingtonHill(opts,numEscanos)
-=======
+            return self.HuntingtonHill(options=opts, numEscanos=numEscanos)
+
         elif t== 'DANISH':
             return self.danish(opts, numEscanos)
-
->>>>>>> conmarred
-=======
-            return self.HuntingtonHill(options=opts, numEscanos=numEscanos)
         elif t == 'DHONT':
             return self.dHont(options=opts, numEscanos=numEscanos)
->>>>>>> 5563cb7c06fcf8e6c580d58b23d8f8a66dd9257e
+
 
         return Response({})
