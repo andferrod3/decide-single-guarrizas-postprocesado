@@ -506,8 +506,6 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
-
-        #Prueba 6 con votos en negativo
     def testHuntington6(self):
         data = {
             'type': 'HUNTINGTONHILL',
@@ -561,6 +559,33 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
+    #Prueba 8 con numEscanos sin pasar
+    def testHuntington8(self):
+        data = {
+            'type': 'HUNTINGTONHILL',
+            'options': [
+                {'option':'Partido A','number':1,'votes': 100000},
+                {'option':'Partido B', 'number':2,'votes': 80000},
+                {'option':'Partido C', 'number':3,'votes': 30000},
+                {'option':'Partido D', 'number':4,'votes': 12000}
+            ],
+            #'numEscanos': 200
+        }
+
+        expected_result = [
+            {'option':'Partido A','number':1,'votes': 100000,'escanos':0},
+            {'option':'Partido B', 'number':2,'votes': 80000,'escanos':0},
+            {'option':'Partido C', 'number':3,'votes': 30000,'escanos':0},
+            {'option':'Partido D', 'number':4,'votes': 12000,'escanos':0}
+          
+          ]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
     def testDHont1(self): #Número de votos para facilitar la comprobación manual.
         data = {
             'type': 'DHONT',
@@ -590,6 +615,26 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
+    #Prueba 9 sin opciones
+    def testHuntington9(self):
+        data = {
+            'type': 'HUNTINGTONHILL',
+            'options': [
+              
+            ],
+            'numEscanos': 200
+        }
+
+        expected_result = [
+           
+        ]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)          
+           
     def testDHont2(self): #Número de votos muy repartido.
         data = {
             'type': 'DHONT',
@@ -675,6 +720,26 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
+    #Prueba 10 sin opciones y num escanos
+    def testHuntington10(self):
+        data = {
+            'type': 'HUNTINGTONHILL',
+            'options': [
+              
+            ],
+            #'numEscanos': 200
+        }
+
+        expected_result = [
+           
+        ]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)  
+           
     def testDHont5(self): #Número de votos muy desigual.
         data = {
             'type': 'DHONT',
@@ -698,14 +763,15 @@ class PostProcTestCase(APITestCase):
             {'option':'OPT5','number':5,'votes': 8784565,'escanos': 48},
             {'option':'OPT6','number':6,'votes': 32151,'escanos': 0},
             {'option':'OPT7','number':7,'votes': 987515,'escanos': 5}
+
         ]
 
         response = self.client.post('/postproc/', data, format='json')
         self.assertEqual(response.status_code, 200)
 
         values = response.json()
-        self.assertEqual(values, expected_result)
-
+        self.assertEqual(values, expected_result)   
+  
     def testDHont6(self): #Número de votos muy grandes.
         data = {
             'type': 'DHONT',
@@ -752,4 +818,4 @@ class PostProcTestCase(APITestCase):
 
         values = response.json()
         self.assertEqual(values, expected_result)
-    
+   
