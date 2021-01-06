@@ -976,7 +976,7 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
-   #Prueba 8 Imperiali mismos votos
+   #Prueba 7 Imperiali mismos votos
     def testImperialiConMismosVotos(self):
         
         data = {
