@@ -2,7 +2,7 @@ language: python
 python: 
 - "3.6"
 env: 
-- DJANGO=2.0 DB=postgres
+- DJANGO=2.0 DB=test_guarrizas_db
 dist: xenial
 services:
   - postgresql
@@ -17,9 +17,9 @@ install:
   - pip install codacy-coverage
 before_script:
   - cp local_settings.travis.py local_settings.py
-  - psql -U postgres -c "create user decide password 'decide'"
-  - psql -U postgres -c "create database test_decide owner decide"
-  - psql -U postgres -c "ALTER USER decide CREATEDB"
+  - psql -U postgres -c "create user guarrizas password 'guarrizas'"
+  - psql -U postgres -c "create database test_guarrizas_db owner guarrizas"
+  - psql -U postgres -c "ALTER USER guarrizas CREATEDB"
   - python manage.py migrate
 script:
   - python manage.py test
