@@ -53,7 +53,6 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.QueryParameterVersioning'
 }
-
 AUTHENTICATION_BACKENDS = [
     'base.backends.AuthBackend',
 ]
@@ -70,12 +69,7 @@ MODULES = [
     'voting',
 ]
 
-BASEURL = 'https://decide-single-guarrizas-postpr.herokuapp.com/'
-
-APIS = {}
-
-import django_heroku
-django_heroku.settings(locals())
+BASEURL = 'https://decide-single-guarrizas-postpr.herokuapp.com'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -170,6 +164,8 @@ KEYBITS = 256
 ALLOWED_VERSIONS = ['v1', 'v2']
 DEFAULT_VERSION = 'v1'
 
+APIS = {}
+
 try:
     from local_settings import *
 except ImportError:
@@ -185,3 +181,7 @@ if os.path.exists("config.jsonnet"):
 
 
 INSTALLED_APPS = INSTALLED_APPS + MODULES
+
+
+import django_heroku
+django_heroku.settings(locals())
