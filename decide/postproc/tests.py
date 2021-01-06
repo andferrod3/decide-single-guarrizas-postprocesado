@@ -171,3 +171,30 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
     
+    def test_danish6(self):
+        data = {
+            "type": "DANISH",
+            "options": [
+                { "option": "Option 1", "number": 1, "votes": 72000},
+                { "option": "Option 2", "number": 2, "votes": 60000},
+                { "option": "Option 3", "number": 3, "votes": 28000},
+                { "option": "Option 4", "number": 4, "votes": 24000},
+                { "option": "Option 5", "number": 5, "votes": 16000}
+            ], 
+            'numEscanos': 4
+
+        }
+
+        expected_result = [
+                { "option": "Option 1", "number": 1, "votes": 72000, "escanyos": 1 },
+                { "option": "Option 2", "number": 2, "votes": 60000, "escanyos": 1 },
+                { "option": "Option 3", "number": 3, "votes": 28000, "escanyos": 1 },
+                { "option": "Option 4", "number": 4, "votes": 24000, "escanyos": 1 },
+                { "option": "Option 5", "number": 5, "votes": 16000, "escanyos": 0 }
+        ]
+
+        response = self.client.post("/postproc/", data, format="json")
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
