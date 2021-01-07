@@ -139,29 +139,22 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
         
+        #test con preguntas vacías
     def test_multi_preguntas3(self):
         data = {
             'type': 'MULTIPREGUNTAS',
             'questions': [
-                [
-                    { 'option': 'Option 1', 'number': 1, 'votes': 15 },
-                    { 'option': 'Option 2', 'number': 2, 'votes': 10 }
+                [  
                 ],
-                [
-                    { 'option': 'Option 1', 'number': 1, 'votes': 5 },
-                    { 'option': 'Option 2', 'number': 2, 'votes': 20 }
+                [  
                 ],
             ]
         }
 
         expected_result = [
-            [
-                    { 'option': 'Option 1', 'number': 1, 'votes': 15, 'postproc': 15 },
-                    { 'option': 'Option 2', 'number': 2, 'votes': 10, 'postproc': 10 }
+            [   
                 ],
-                [
-                    { 'option': 'Option 2', 'number': 2, 'votes': 20, 'postproc': 20 },
-                    { 'option': 'Option 1', 'number': 1, 'votes': 5, 'postproc': 5 }
+                [  
                 ],
         ]
         
