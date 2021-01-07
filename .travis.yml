@@ -20,6 +20,7 @@ before_script:
   - psql -U postgres -c "create user guarrizas password 'guarrizas'"
   - psql -U postgres -c "create database test_guarrizas_db owner guarrizas"
   - psql -U postgres -c "ALTER USER guarrizas CREATEDB"
+  - psql -U postgres -c "ALTER DATABASE test_guarrizas_db OWNER TO guarrizas"
   - python manage.py migrate
 script:
   - python manage.py test
