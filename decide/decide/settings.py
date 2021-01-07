@@ -112,8 +112,8 @@ DATABASES = {
         'NAME': 'decide',
         'USER': 'decide',
         'PASSWORD': 'decide',
-        'HOST': '127.0.0.1',
-        'PORT': '8001',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
