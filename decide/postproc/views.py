@@ -1,6 +1,8 @@
 from django.db import models
 from rest_framework.views import APIView
 from rest_framework.response import Response
+import math
+import numpy as np
 
 
 import math
@@ -22,6 +24,125 @@ class PostProcView(APIView):
         return Response(out)
 
 
+<<<<<<< HEAD
+=======
+    def multiPreguntas(self, questions):
+        for question in questions:
+            for opt in question:
+                opt['postproc'] = opt['votes'];
+
+            question.sort(key=lambda x: -x['postproc'])
+
+        return Response(questions)
+
+
+    def imperialiYResiduo(self, numEscanos, options):
+
+        votosTotales = 0
+        for x in options:
+            votosTotales += x['votes']
+
+        if votosTotales > 0 and numEscanos > 0:
+
+            q = round(votosTotales / (numEscanos+2), 0)
+            
+            escanosAsignados = 0
+            for x in options:
+                escanosSuelo = math.trunc(x['votes']/q)
+                x.update({'escanosImp' : escanosSuelo})
+                escanosAsignados += x['escanosImp']               
+
+            #Si quedan escaños libres
+            while(escanosAsignados < numEscanos):
+                for x in options:
+                    x.update({ 
+                        'escanosRes' : x['votes'] - (q * x['escanosImp'])})
+
+                options.sort(key=lambda x : -x['escanosRes'])
+
+                opcionMasVotosResiduo = options[0]
+                opcionMasVotosResiduo.update({
+                'escanosImp' : opcionMasVotosResiduo['escanosImp'] + 1})
+                escanosAsignados += 1
+
+                #Lo borramos para que no este como atributo
+                for i in options:
+                    i.pop('escanosRes')
+            options.sort(key=lambda x : -x['escanosImp'])
+            
+            return Response(options)
+        else:
+            for x in options:
+                x.update({'escanosImp' : 0})
+            return Response(options)
+
+    def HuntingtonHill(self,numEscanos,options):
+
+        votosTotales = 0
+        for x in options:
+            votosTotales += x['votes']
+        
+        if votosTotales > 0 and numEscanos > 0:
+
+            limite = votosTotales/numEscanos
+
+            #Crear parametros para metodo rounding rule
+            rounding = limite*0.001
+            lower = limite-rounding
+            upper = limite+rounding
+
+            numEscanosAsig = 0
+
+            while(numEscanosAsig != numEscanos):
+
+                #si llegamos a aplicar rounding rule y no llegamos al numero igual de escanos, 
+                #reseteamos de nuevo el numero de escanos asig y empezamos de nuevo
+                numEscanosAsig = 0
+
+                for x in options:
+
+                    if(x['votes']<limite):
+                        x['escanos']=0
+                    else:
+                        cuota = x['votes']/limite
+                        
+                        if(isinstance(cuota,int)):
+                            x['escanos']=cuota
+                        else:
+                            #Calculamos las cotas superior e inferior de la cuota y despues la media geometrica
+                            lQ = int(cuota)
+                            mediaG = math.sqrt(lQ*(lQ+1))
+
+                            if(cuota > mediaG):
+                                x['escanos']=(lQ+1)
+                            else:
+                                x['escanos']=lQ
+                
+                    numEscanosAsig += x['escanos']
+
+                #Huntington-Hill Rounding Rule
+                #For a quota q, let L denote its lower quota, U its upper quota, and G the
+                #geometric mean of L and U. If then round q down to L, otherwise
+                #round q up to U.
+
+                if(numEscanosAsig < numEscanos):
+                    limite = lower
+                    lower = limite-rounding
+                    upper = limite+rounding
+
+                else:
+                    limite = upper
+                    lower = limite-rounding
+                    upper = limite+rounding
+        else:
+            for x in options:
+                x.update({'escanos' : 0})
+            return Response(options)
+        
+        return Response(options)
+
+
+>>>>>>> origin/develop2.0
     def danish(self, options, escañosTotales):
 
         #Creamos una lista de tamaño igual al numero de escaños. 
@@ -63,27 +184,90 @@ class PostProcView(APIView):
         return Response(options)
        
 
+<<<<<<< HEAD
+=======
+
+    def dHont(self, options, numEscanos):
+
+        #Añadimos un campo para el contador de escaños asignados a cada opción.
+        for option in options:
+            option['escanos'] = 0
+        
+        #Para cada escaño, vamos a recorrer todas las opciones, usando la fórmula de d'Hont: número de votos a esa opción / (número de escaños asignados a esa opción + 1)
+        for escano in range(0, numEscanos):
+             #Lista de tamaño igual al número de opciones. Representa el recuento al aplicar la fórmula de cada opción, ordenados en la misma forma.
+            recuento = []
+            for option in options:
+                r = option['votes'] / (option['escanos']+1)
+                recuento.append(r)
+            
+            #Obtenemos el índice del máximo valor en la lista de recuento de votos, es decir, el índice del ganador del escaño
+            ganador = recuento.index(max(recuento))
+            #Al estar ordenadas de la misma forma, en la posicion del ganador le sumamos 1 escaño
+            options[ganador]['escanos'] += 1
+
+        return Response(options)
+
+
+    def saintelague(self,options,escanos):
+        results = []
+        for opt in options:
+            results.append({
+                    **opt,
+                    'postproc': 0,
+                })
+        for i in range(escanos):
+            maximo = max(options, key=lambda opt: opt['votes'])
+            ganador_escano = next((o for o in results if o['option'] == maximo['option']), None)
+            ganador_escano['postproc'] = ganador_escano['postproc'] + 1
+            ganador_escano = next((o for o in results if o['option'] == maximo['option']), None)
+            maximo['votes'] = ganador_escano['votes']//(2*ganador_escano['postproc'] +1)
+        
+        results.sort(key=lambda x: -x['postproc'])
+        out = {'results': results}
+        print(results)
+        return Response(out)
+
+>>>>>>> origin/develop2.0
     def post(self, request):
         """
-         * type: IDENTITY | EQUALITY | WEIGHT
+         * type: IDENTITY | IMPERIALI | HUNTINGTONHILL | 
          * options: [
             {
              option: str,
              number: int,
              votes: int,
-             ...extraparams
+             escanos: int
             }
+        
            ]
         """
 
         t = request.data.get('type', 'IDENTITY')
+        #groups = request.data.get('groups', False)
         opts = request.data.get('options', [])
         numEscanos = request.data.get('numEscanos', 0)
         
         if t == 'IDENTITY':
             return self.identity(opts)
+<<<<<<< HEAD
         elif t== 'DANISH':
             return self.danish(opts, numEscanos)
 
+=======
+        elif t == 'IMPERIALI':
+            return self.imperialiYResiduo(numEscanos=numEscanos, options=opts)
+        elif t == 'HUNTINGTONHILL':
+            return self.HuntingtonHill(options=opts, numEscanos=numEscanos)
+        elif t== 'DANISH':
+            return self.danish(opts, numEscanos)
+        elif t == 'DHONT':
+            return self.dHont(options=opts, numEscanos=numEscanos)
+        elif t == 'MULTIPREGUNTAS':
+            questions = request.data.get('questions', [])
+            return self.multiPreguntas(questions)
+        elif t == 'SAINTELAGUE':
+            return self.saintelague(opts,numEscanos)
+>>>>>>> origin/develop2.0
 
         return Response({})
