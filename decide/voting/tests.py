@@ -121,10 +121,78 @@ class VotingTestCase(BaseTestCase):
         response = mods.post('voting', params=data, response=True)
         self.assertEqual(response.status_code, 400)
 
+    def test_create_voting_metodos_votacion(self):
+        self.login()
         data = {
             'name': 'Example',
             'desc': 'Description example',
             'tipo': 'IDENTITY',
+            'question': 'I want a ',
+            'question_opt': ['cat', 'dog', 'horse']
+        }
+
+        response = self.client.post('/voting/', data, format='json')
+        self.assertEqual(response.status_code, 201)
+
+        data = {
+            'name': 'Example',
+            'desc': 'Description example',
+            'tipo': 'IMPERIALI',
+            'question': 'I want a ',
+            'question_opt': ['cat', 'dog', 'horse']
+        }
+
+        response = self.client.post('/voting/', data, format='json')
+        self.assertEqual(response.status_code, 201)
+
+        data = {
+            'name': 'Example',
+            'desc': 'Description example',
+            'tipo': 'HUNTINGTONHILL',
+            'question': 'I want a ',
+            'question_opt': ['cat', 'dog', 'horse']
+        }
+
+        response = self.client.post('/voting/', data, format='json')
+        self.assertEqual(response.status_code, 201)
+        
+        data = {
+            'name': 'Example',
+            'desc': 'Description example',
+            'tipo': 'DANISH',
+            'question': 'I want a ',
+            'question_opt': ['cat', 'dog', 'horse']
+        }
+
+        response = self.client.post('/voting/', data, format='json')
+        self.assertEqual(response.status_code, 201)
+
+        data = {
+            'name': 'Example',
+            'desc': 'Description example',
+            'tipo': 'DHONT',
+            'question': 'I want a ',
+            'question_opt': ['cat', 'dog', 'horse']
+        }
+
+        response = self.client.post('/voting/', data, format='json')
+        self.assertEqual(response.status_code, 201)
+
+        data = {
+            'name': 'Example',
+            'desc': 'Description example',
+            'tipo': 'MULTIPREGUNTAS',
+            'question': 'I want a ',
+            'question_opt': ['cat', 'dog', 'horse']
+        }
+
+        response = self.client.post('/voting/', data, format='json')
+        self.assertEqual(response.status_code, 201)
+
+        data = {
+            'name': 'Example',
+            'desc': 'Description example',
+            'tipo': 'SAINTELAGUE',
             'question': 'I want a ',
             'question_opt': ['cat', 'dog', 'horse']
         }
