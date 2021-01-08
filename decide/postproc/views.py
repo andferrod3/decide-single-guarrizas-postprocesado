@@ -24,8 +24,6 @@ class PostProcView(APIView):
         return Response(out)
 
 
-<<<<<<< HEAD
-=======
     def multiPreguntas(self, questions):
         for question in questions:
             for opt in question:
@@ -142,7 +140,6 @@ class PostProcView(APIView):
         return Response(options)
 
 
->>>>>>> origin/develop2.0
     def danish(self, options, escañosTotales):
 
         #Creamos una lista de tamaño igual al numero de escaños. 
@@ -184,8 +181,6 @@ class PostProcView(APIView):
         return Response(options)
        
 
-<<<<<<< HEAD
-=======
 
     def dHont(self, options, numEscanos):
 
@@ -228,7 +223,6 @@ class PostProcView(APIView):
         print(results)
         return Response(out)
 
->>>>>>> origin/develop2.0
     def post(self, request):
         """
          * type: IDENTITY | IMPERIALI | HUNTINGTONHILL | 
@@ -250,11 +244,9 @@ class PostProcView(APIView):
         
         if t == 'IDENTITY':
             return self.identity(opts)
-<<<<<<< HEAD
         elif t== 'DANISH':
             return self.danish(opts, numEscanos)
 
-=======
         elif t == 'IMPERIALI':
             return self.imperialiYResiduo(numEscanos=numEscanos, options=opts)
         elif t == 'HUNTINGTONHILL':
@@ -268,6 +260,5 @@ class PostProcView(APIView):
             return self.multiPreguntas(questions)
         elif t == 'SAINTELAGUE':
             return self.saintelague(opts,numEscanos)
->>>>>>> origin/develop2.0
 
         return Response({})

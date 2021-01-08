@@ -42,8 +42,6 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
-<<<<<<< HEAD
-=======
 
     def test_multi_preguntas1(self):
         data = {
@@ -354,7 +352,6 @@ class PostProcTestCase(APITestCase):
         self.assertEqual(values, expected_result)
 
 
->>>>>>> origin/develop2.0
     def test_danish1(self):
         data = {
             "type": "DANISH",
@@ -374,8 +371,6 @@ class PostProcTestCase(APITestCase):
         ]
 
         response = self.client.post("/postproc/", data, format="json")
-<<<<<<< HEAD
-=======
 
         self.assertEqual(response.status_code, 200)
 
@@ -815,7 +810,6 @@ class PostProcTestCase(APITestCase):
         ]
 
         response = self.client.post('/postproc/', data, format='json')
->>>>>>> origin/develop2.0
         self.assertEqual(response.status_code, 200)
 
         values = response.json()
@@ -845,7 +839,6 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
-<<<<<<< HEAD
     def test_danish3(self):
         data = {
             "type": "DANISH",
@@ -869,7 +862,10 @@ class PostProcTestCase(APITestCase):
         ]
 
         response = self.client.post("/postproc/", data, format="json")
-=======
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
     #Prueba 2 Imperiali con numEscanos=0   
     def testImperialiNoEscanos(self):
         
@@ -933,13 +929,11 @@ class PostProcTestCase(APITestCase):
         ]
 
         response = self.client.post('/postproc/', data, format='json')
->>>>>>> origin/develop2.0
         self.assertEqual(response.status_code, 200)
 
         values = response.json()
         self.assertEqual(values, expected_result)
 
-<<<<<<< HEAD
     def test_danish4(self):
         data = {
             "type": "DANISH",
@@ -961,7 +955,10 @@ class PostProcTestCase(APITestCase):
         ]
 
         response = self.client.post("/postproc/", data, format="json")
-=======
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
     def test_saintelague2(self):
         data = {
             'type': 'SAINTELAGUE',
@@ -1015,12 +1012,10 @@ class PostProcTestCase(APITestCase):
         ]
 
         response = self.client.post('/postproc/', data, format='json')
->>>>>>> origin/develop2.0
         self.assertEqual(response.status_code, 200)
 
         values = response.json()
         self.assertEqual(values, expected_result)
-<<<<<<< HEAD
     
     def test_danish5(self):
         data = {
@@ -1043,7 +1038,10 @@ class PostProcTestCase(APITestCase):
         ]
 
         response = self.client.post("/postproc/", data, format="json")
-=======
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
 
     #Prueba 5 Imperiali sin votos sin escanos
     def testImperialiCon0Votos0Escanos(self):
@@ -1094,12 +1092,10 @@ class PostProcTestCase(APITestCase):
         ]
 
         response = self.client.post('/postproc/', data, format='json')
->>>>>>> origin/develop2.0
         self.assertEqual(response.status_code, 200)
 
         values = response.json()
         self.assertEqual(values, expected_result)
-<<<<<<< HEAD
     
     def test_danish6(self):
         data = {
@@ -1124,7 +1120,10 @@ class PostProcTestCase(APITestCase):
         ]
 
         response = self.client.post("/postproc/", data, format="json")
-=======
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
 
    #Prueba 7 Imperiali mismos votos
     def testImperialiConMismosVotos(self):
@@ -1147,13 +1146,10 @@ class PostProcTestCase(APITestCase):
         ]
 
         response = self.client.post('/postproc/', data, format='json')
->>>>>>> origin/develop2.0
         self.assertEqual(response.status_code, 200)
 
         values = response.json()
         self.assertEqual(values, expected_result)
-<<<<<<< HEAD
-=======
 
     def test_saintelague3(self):
         data = {
@@ -1184,4 +1180,3 @@ class PostProcTestCase(APITestCase):
         self.assertEqual(values, expected_result)
 
    
->>>>>>> origin/develop2.0
