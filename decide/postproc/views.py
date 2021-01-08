@@ -225,14 +225,14 @@ class PostProcView(APIView):
 
     def post(self, request):
         """
-         * type: IDENTITY | IMPERIALI | HUNTINGTONHILL | 
+         * type: IDENTITY | IMPERIALI | HUNTINGTONHILL | DANISH | DHONT | MULTIPREGUNTAS | SAINTELAGUE
          * options: [
             {
              option: str,
              number: int,
              votes: int,
-             escanos: int
             }
+         * numEscanos: int
         
            ]
         """
@@ -244,9 +244,6 @@ class PostProcView(APIView):
         
         if t == 'IDENTITY':
             return self.identity(opts)
-        elif t== 'DANISH':
-            return self.danish(opts, numEscanos)
-
         elif t == 'IMPERIALI':
             return self.imperialiYResiduo(numEscanos=numEscanos, options=opts)
         elif t == 'HUNTINGTONHILL':

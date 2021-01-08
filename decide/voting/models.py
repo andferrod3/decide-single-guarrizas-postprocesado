@@ -36,6 +36,11 @@ class Voting(models.Model):
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
 
+    tipo_votacion = [("IDENTITY", "IDENTITY"), ("IMPERIALI", "IMPERIALI"), ("HUNTINGTONHILL", "HUNTINGTONHILL"), ("DANISH", "DANISH"),
+    ("DHONT", "DHONT"), ("MULTIPREGUNTAS", "MULTIPREGUNTAS"), ("SAINTELAGUE", "SAINTELAGUE")]
+
+    tipo = models.CharField(choices=tipo_votacion, max_length=20, default="IDENTITY")
+
     pub_key = models.OneToOneField(Key, related_name='voting', blank=True, null=True, on_delete=models.SET_NULL)
     auths = models.ManyToManyField(Auth, related_name='votings')
 
@@ -113,7 +118,7 @@ class Voting(models.Model):
                 'votes': votes,
             })
 
-        data = { 'type': 'IDENTITY', 'options': opts }
+        data = { 'type': self.tipo, 'options': opts }
         postp = mods.post('postproc', json=data)
 
         self.postproc = postp
