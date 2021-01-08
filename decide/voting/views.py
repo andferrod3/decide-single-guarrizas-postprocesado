@@ -27,8 +27,7 @@ class VotingView(generics.ListCreateAPIView):
             if not data in request.data:
                 return Response({}, status=status.HTTP_400_BAD_REQUEST)
 
-        q=request.data.get('question')
-        question = Question(desc=q[0], numEscano=q[1])
+        question = Question(desc=request.data.get('question'))
         question.save()
         for idx, q_opt in enumerate(request.data.get('question_opt')):
             opt = QuestionOption(question=question, option=q_opt, number=idx)

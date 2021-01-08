@@ -47,31 +47,31 @@ class PostProcView(APIView):
             escanosAsignados = 0
             for x in options:
                 escanosSuelo = math.trunc(x['votes']/q)
-                x.update({'escanosImp' : escanosSuelo})
-                escanosAsignados += x['escanosImp']               
+                x.update({'postproc' : escanosSuelo})
+                escanosAsignados += x['postproc']               
 
             #Si quedan escaños libres
             while(escanosAsignados < numEscanos):
                 for x in options:
                     x.update({ 
-                        'escanosRes' : x['votes'] - (q * x['escanosImp'])})
+                        'escanosRes' : x['votes'] - (q * x['postproc'])})
 
                 options.sort(key=lambda x : -x['escanosRes'])
 
                 opcionMasVotosResiduo = options[0]
                 opcionMasVotosResiduo.update({
-                'escanosImp' : opcionMasVotosResiduo['escanosImp'] + 1})
+                'postproc' : opcionMasVotosResiduo['postproc'] + 1})
                 escanosAsignados += 1
 
                 #Lo borramos para que no este como atributo
                 for i in options:
                     i.pop('escanosRes')
-            options.sort(key=lambda x : -x['escanosImp'])
+            options.sort(key=lambda x : -x['postproc'])
             
             return Response(options)
         else:
             for x in options:
-                x.update({'escanosImp' : 0})
+                x.update({'postproc' : 0})
             return Response(options)
 
     def HuntingtonHill(self,numEscanos,options):
@@ -100,23 +100,23 @@ class PostProcView(APIView):
                 for x in options:
 
                     if(x['votes']<limite):
-                        x['escanos']=0
+                        x['postproc']=0
                     else:
                         cuota = x['votes']/limite
                         
                         if(isinstance(cuota,int)):
-                            x['escanos']=cuota
+                            x['postproc']=cuota
                         else:
                             #Calculamos las cotas superior e inferior de la cuota y despues la media geometrica
                             lQ = int(cuota)
                             mediaG = math.sqrt(lQ*(lQ+1))
 
                             if(cuota > mediaG):
-                                x['escanos']=(lQ+1)
+                                x['postproc']=(lQ+1)
                             else:
-                                x['escanos']=lQ
+                                x['postproc']=lQ
                 
-                    numEscanosAsig += x['escanos']
+                    numEscanosAsig += x['postproc']
 
                 #Huntington-Hill Rounding Rule
                 #For a quota q, let L denote its lower quota, U its upper quota, and G the
@@ -134,7 +134,7 @@ class PostProcView(APIView):
                     upper = limite+rounding
         else:
             for x in options:
-                x.update({'escanos' : 0})
+                x.update({'postproc' : 0})
             return Response(options)
         
         return Response(options)
@@ -153,7 +153,7 @@ class PostProcView(APIView):
         
         #le asignamos un campo para el recuento de escanyos a cada opcion inicializandola a 0
         for option in options:
-            option['escanyos']=0
+            option['postproc']=0
 
         #creamos una matriz de el num de opciones como filas, y el num de escanyos totales como columnas
         matriz=np.zeros((len(options), escañosTotales))
@@ -174,7 +174,7 @@ class PostProcView(APIView):
             maximo = np.amax(matriz)
             posicion = np.where(matriz==maximo)
             opt=options[posicion[0][0]]
-            opt['escanyos']+=1
+            opt['postproc']+=1
             matriz[posicion[0][0]][posicion[1][0]] = 0
             
         
@@ -186,20 +186,20 @@ class PostProcView(APIView):
 
         #Añadimos un campo para el contador de escaños asignados a cada opción.
         for option in options:
-            option['escanos'] = 0
+            option['postproc'] = 0
         
         #Para cada escaño, vamos a recorrer todas las opciones, usando la fórmula de d'Hont: número de votos a esa opción / (número de escaños asignados a esa opción + 1)
         for escano in range(0, numEscanos):
              #Lista de tamaño igual al número de opciones. Representa el recuento al aplicar la fórmula de cada opción, ordenados en la misma forma.
             recuento = []
             for option in options:
-                r = option['votes'] / (option['escanos']+1)
+                r = option['votes'] / (option['postproc']+1)
                 recuento.append(r)
             
             #Obtenemos el índice del máximo valor en la lista de recuento de votos, es decir, el índice del ganador del escaño
             ganador = recuento.index(max(recuento))
             #Al estar ordenadas de la misma forma, en la posicion del ganador le sumamos 1 escaño
-            options[ganador]['escanos'] += 1
+            options[ganador]['postproc'] += 1
 
         return Response(options)
 

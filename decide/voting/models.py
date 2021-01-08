@@ -9,11 +9,9 @@ from base.models import Auth, Key
 
 class Question(models.Model):
     desc = models.TextField()
-    
-    numEscanos = models.PositiveIntegerField(blank=True, null=True, default=0, verbose_name='Seats')
 
     def __str__(self):
-        return [(self.desc), (self.numEscanos)]
+        return self.desc
 
 
 class QuestionOption(models.Model):
@@ -45,6 +43,7 @@ class Voting(models.Model):
 
     tipo = models.CharField(choices=tipo_votacion, max_length=20, default="IDENTITY", verbose_name='Count method')
 
+    numEscanos = models.PositiveIntegerField(blank=True, null=True, default=0, verbose_name='Seats')
 
     pub_key = models.OneToOneField(Key, related_name='voting', blank=True, null=True, on_delete=models.SET_NULL)
     auths = models.ManyToManyField(Auth, related_name='votings')
@@ -123,7 +122,7 @@ class Voting(models.Model):
                 'votes': votes,
             })
 
-        data = { 'type': self.tipo, 'options': opts,  'numEscanos': self.question.numEscanos}
+        data = { 'type': self.tipo, 'options': opts, 'numEscanos': self.numEscanos}
         postp = mods.post('postproc', json=data)
 
         self.postproc = postp

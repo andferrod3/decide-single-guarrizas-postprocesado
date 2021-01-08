@@ -127,6 +127,7 @@ class VotingTestCase(BaseTestCase):
             'name': 'Example',
             'desc': 'Description example',
             'tipo': 'IDENTITY',
+            'numEscanos': '10',
             'question': 'I want a ',
             'question_opt': ['cat', 'dog', 'horse']
         }
@@ -138,6 +139,7 @@ class VotingTestCase(BaseTestCase):
             'name': 'Example',
             'desc': 'Description example',
             'tipo': 'IMPERIALI',
+            'numEscanos': '10',
             'question': 'I want a ',
             'question_opt': ['cat', 'dog', 'horse']
         }
@@ -149,6 +151,7 @@ class VotingTestCase(BaseTestCase):
             'name': 'Example',
             'desc': 'Description example',
             'tipo': 'HUNTINGTONHILL',
+            'numEscanos': '10',
             'question': 'I want a ',
             'question_opt': ['cat', 'dog', 'horse']
         }
@@ -160,6 +163,7 @@ class VotingTestCase(BaseTestCase):
             'name': 'Example',
             'desc': 'Description example',
             'tipo': 'DANISH',
+            'numEscanos': '10',
             'question': 'I want a ',
             'question_opt': ['cat', 'dog', 'horse']
         }
@@ -171,6 +175,7 @@ class VotingTestCase(BaseTestCase):
             'name': 'Example',
             'desc': 'Description example',
             'tipo': 'DHONT',
+            'numEscanos': '10',
             'question': 'I want a ',
             'question_opt': ['cat', 'dog', 'horse']
         }
@@ -182,6 +187,7 @@ class VotingTestCase(BaseTestCase):
             'name': 'Example',
             'desc': 'Description example',
             'tipo': 'MULTIPREGUNTAS',
+            'numEscanos': '10',
             'question': 'I want a ',
             'question_opt': ['cat', 'dog', 'horse']
         }
@@ -193,6 +199,7 @@ class VotingTestCase(BaseTestCase):
             'name': 'Example',
             'desc': 'Description example',
             'tipo': 'SAINTELAGUE',
+            'numEscanos': '10',
             'question': 'I want a ',
             'question_opt': ['cat', 'dog', 'horse']
         }
