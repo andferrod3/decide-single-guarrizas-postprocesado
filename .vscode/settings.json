@@ -1,5 +1,6 @@
 {
-    "files.watcherExclude": {
-        "**/target": true
+        "python.pythonPath": "C:\\Python3\\python.exe",
+        "files.watcherExclude": {
+            "**/target": true
+        }
     }
-}
