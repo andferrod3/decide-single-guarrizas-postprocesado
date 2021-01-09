@@ -206,21 +206,21 @@ class PostProcView(APIView):
 
     def saintelague(self,options,escanos):
         results = []
-        for opt in options:
-            results.append({
-                    **opt,
-                    'postproc': 0,
-                })
-        for i in range(escanos):
-            maximo = max(options, key=lambda opt: opt['votes'])
-            ganador_escano = next((o for o in results if o['option'] == maximo['option']), None)
-            ganador_escano['postproc'] = ganador_escano['postproc'] + 1
-            ganador_escano = next((o for o in results if o['option'] == maximo['option']), None)
-            maximo['votes'] = ganador_escano['votes']//(2*ganador_escano['postproc'] +1)
-        
-        results.sort(key=lambda x: -x['postproc'])
+        if escanos >= 0:
+            for opt in options:
+                results.append({
+                        **opt,
+                        'postproc': 0,
+                    })
+            for i in range(escanos):
+                if opt['votes'] != 0:
+                    maximo = max(options, key=lambda opt: opt['votes'])
+                    ganador_escano = next((o for o in results if o['option'] == maximo['option']), None)
+                    ganador_escano['postproc'] = ganador_escano['postproc'] + 1
+                    maximo['votes'] = ganador_escano['votes']//(2*ganador_escano['postproc'] +1)
+            
+            results.sort(key=lambda x: -x['postproc'])
         out = {'results': results}
-        print(results)
         return Response(out)
 
     def post(self, request):
