@@ -1055,6 +1055,7 @@ class PostProcTestCase(APITestCase):
 
         values = response.json()
         self.assertEqual(values, expected_result)
+
     def test_saintelague2(self):
         data = {
             'type': 'SAINTELAGUE',
@@ -1274,5 +1275,88 @@ class PostProcTestCase(APITestCase):
 
         values = response.json()
         self.assertEqual(values, expected_result)
+
+    def test_saintelague4(self):
+        data = {
+            'type': 'SAINTELAGUE',
+            'numEscanos': 0,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 1000 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 800 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 750 },
+                { 'option': 'Option 4', 'number': 4, 'votes': 600 },
+                { 'option': 'Option 5', 'number': 5, 'votes': 350 },
+            ]
+        }
+
+        expected_result = {
+            'results': [
+            { 'option': 'Option 1', 'number': 1, 'votes': 1000, 'postproc': 0 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 800, 'postproc': 0 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 750, 'postproc': 0 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 600, 'postproc': 0 },
+            { 'option': 'Option 5', 'number': 5, 'votes': 350, 'postproc': 0 },
+            ]
+        }
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    def test_saintelague5(self):
+        data = {
+            'type': 'SAINTELAGUE',
+            'numEscanos': 4,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 0 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 0 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 0 },
+                { 'option': 'Option 4', 'number': 4, 'votes': 0 },
+                { 'option': 'Option 5', 'number': 5, 'votes': 0 },
+            ]
+        }
+
+        expected_result = {
+            'results': [
+            { 'option': 'Option 1', 'number': 1, 'votes': 0, 'postproc': 0 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 0, 'postproc': 0 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 0, 'postproc': 0 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 0, 'postproc': 0 },
+            { 'option': 'Option 5', 'number': 5, 'votes': 0, 'postproc': 0 },
+            ]
+        }
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    def test_saintelague6(self):
+        data = {
+            'type': 'SAINTELAGUE',
+            'numEscanos': -4,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 1000 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 800 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 750 },
+                { 'option': 'Option 4', 'number': 4, 'votes': 600 },
+                { 'option': 'Option 5', 'number': 5, 'votes': 350 },
+            ]
+        }
+
+        expected_result = {
+            'results': [
+            ]
+        }
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    
+
+
 
    
