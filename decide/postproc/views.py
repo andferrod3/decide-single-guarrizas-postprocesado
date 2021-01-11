@@ -27,7 +27,7 @@ class PostProcView(APIView):
     def multiPreguntas(self, questions):
         for question in questions:
             for opt in question:
-                opt['postproc'] = opt['votes'];
+                opt['postproc'] = opt['votes']
 
             question.sort(key=lambda x: -x['postproc'])
 
@@ -52,33 +52,43 @@ class PostProcView(APIView):
             votosTotales += x['votes']
 
         if votosTotales > 0 and numEscanos > 0:
-
-            q = round(votosTotales / (numEscanos+2), 0)
-            
-            escanosAsignados = 0
-            for x in options:
-                escanosSuelo = math.trunc(x['votes']/q)
-                x.update({'postproc' : escanosSuelo})
-                escanosAsignados += x['postproc']               
-
-            #Si quedan escaños libres
-            while(escanosAsignados < numEscanos):
+            if votosTotales>(numEscanos+2):
+                q = round(votosTotales / (numEscanos+2), 0)
+                
+                escanosAsignados = 0
                 for x in options:
-                    x.update({ 
-                        'escanosRes' : x['votes'] - (q * x['postproc'])})
+                    escanosSuelo = math.trunc(x['votes']/q)
+                    x.update({'postproc' : escanosSuelo})
+                    escanosAsignados += x['postproc']               
 
-                options.sort(key=lambda x : -x['escanosRes'])
+                #Si quedan escaños libres
+                while(escanosAsignados < numEscanos):
+                    for x in options:
+                        x.update({ 
+                            'escanosRes' : x['votes'] - (q * x['postproc'])})
 
-                opcionMasVotosResiduo = options[0]
-                opcionMasVotosResiduo.update({
-                'postproc' : opcionMasVotosResiduo['postproc'] + 1})
-                escanosAsignados += 1
+                    options.sort(key=lambda x : -x['escanosRes'])
 
-                #Lo borramos para que no este como atributo
-                for i in options:
-                    i.pop('escanosRes')
-            options.sort(key=lambda x : -x['postproc'])
-            
+                    opcionMasVotosResiduo = options[0]
+                    opcionMasVotosResiduo.update({
+                    'postproc' : opcionMasVotosResiduo['postproc'] + 1})
+                    escanosAsignados += 1
+
+                    #Lo borramos para que no este como atributo
+                    for i in options:
+                        i.pop('escanosRes')
+                options.sort(key=lambda x : -x['postproc'])
+            else:
+                escanosAsignadosQ= 0
+                for x in options:
+                    escanosQ= math.trunc(numEscanos/ len(options))
+                    x.update({'postproc' : escanosQ}) 
+                    escanosAsignadosQ += x['postproc']
+                
+                if escanosAsignadosQ < numEscanos:
+                    for x in options:
+                        options.sort(key=lambda x : -x['votes'])
+                    options[0].update({'postproc' : options[0]['postproc']+1})
             return Response(options)
         else:
             for x in options:
