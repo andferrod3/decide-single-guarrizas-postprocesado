@@ -33,6 +33,17 @@ class PostProcView(APIView):
 
         return Response(questions)
 
+    def pesoPorPreguntas(self, options):
+        out = []
+        for opt in options:
+            out.append({
+                **opt,
+                'postproc': opt['votes'] * opt['peso'],
+            })
+
+        out.sort(key=lambda x: -x['postproc'])
+        return Response(out)
+
 
     def imperialiYResiduo(self, numEscanos, options):
 
@@ -254,6 +265,8 @@ class PostProcView(APIView):
         elif t == 'MULTIPREGUNTAS':
             questions = request.data.get('questions', [])
             return self.multiPreguntas(questions)
+        elif t == 'PREGUNTASPESO':
+            return self.pesoPorPreguntas(opts)
         elif t == 'SAINTELAGUE':
             return self.saintelague(opts,numEscanos)
 
