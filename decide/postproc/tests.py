@@ -1248,6 +1248,52 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
+    #Prueba 8 Imperiali menos votos que ecanos y numEscanos divisible entre el numero de opciones
+    def testImperialiMenosVotosQueEscanosDivisible(self):
+        
+        data = {
+            'type': 'IMPERIALI',
+            'options': [
+                { 'option': 'A', 'number': 1, 'votes': 4 },
+                { 'option': 'B', 'number': 2, 'votes': 1 },
+
+            ],
+            'numEscanos': 20,   
+        }
+        expected_result = [
+            { 'option': 'A', 'number': 1, 'votes': 4, 'postproc': 10},
+            { 'option': 'B', 'number': 2, 'votes': 1, 'postproc': 10},
+        ]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    #Prueba 9 Imperiali menos votos que ecanos y numEscanos NO divisible entre el numero de opciones
+    def testImperialiMenosVotosQueEscanosNoDivisible(self):
+        
+        data = {
+            'type': 'IMPERIALI',
+            'options': [
+                { 'option': 'A', 'number': 1, 'votes': 4 },
+                { 'option': 'B', 'number': 2, 'votes': 1 },
+
+            ],
+            'numEscanos': 21,   
+        }
+        expected_result = [
+            { 'option': 'A', 'number': 1, 'votes': 4, 'postproc': 11},
+            { 'option': 'B', 'number': 2, 'votes': 1, 'postproc': 10},
+        ]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
     def test_saintelague3(self):
         data = {
             'type': 'SAINTELAGUE',
