@@ -69,7 +69,7 @@ MODULES = [
     'voting',
 ]
 
-BASEURL = 'https://decide-single-guarrizas-postpr.herokuapp.com'
+BASEURL = 'https://decide-guarrizas-postproc.herokuapp.com'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
