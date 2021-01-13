@@ -53,7 +53,6 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.QueryParameterVersioning'
 }
-
 AUTHENTICATION_BACKENDS = [
     'base.backends.AuthBackend',
 ]
@@ -70,7 +69,7 @@ MODULES = [
     'voting',
 ]
 
-BASEURL = 'https://single-guarrizas-postproc.herokuapp.com'
+BASEURL = 'https://guarrizas-postproc.herokuapp.com'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

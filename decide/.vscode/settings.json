@@ -1,3 +1,10 @@
 {
+<<<<<<< HEAD
     "python.pythonPath": "C:\\Python3\\python.exe"
+=======
+    "python.pythonPath": "C:\\Python3\\python.exe",
+    "files.watcherExclude": {
+        "**/target": true
+    }
+>>>>>>> origin/develop2.0
 }

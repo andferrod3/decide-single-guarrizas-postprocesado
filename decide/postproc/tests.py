@@ -139,29 +139,22 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
         
+        #test con preguntas vacías
     def test_multi_preguntas3(self):
         data = {
             'type': 'MULTIPREGUNTAS',
             'questions': [
-                [
-                    { 'option': 'Option 1', 'number': 1, 'votes': 15 },
-                    { 'option': 'Option 2', 'number': 2, 'votes': 10 }
+                [  
                 ],
-                [
-                    { 'option': 'Option 1', 'number': 1, 'votes': 5 },
-                    { 'option': 'Option 2', 'number': 2, 'votes': 20 }
+                [  
                 ],
             ]
         }
 
         expected_result = [
-            [
-                    { 'option': 'Option 1', 'number': 1, 'votes': 15, 'postproc': 15 },
-                    { 'option': 'Option 2', 'number': 2, 'votes': 10, 'postproc': 10 }
+            [   
                 ],
-                [
-                    { 'option': 'Option 2', 'number': 2, 'votes': 20, 'postproc': 20 },
-                    { 'option': 'Option 1', 'number': 1, 'votes': 5, 'postproc': 5 }
+                [  
                 ],
         ]
         
@@ -298,6 +291,128 @@ class PostProcTestCase(APITestCase):
 
         values = response.json()
         self.assertEqual(values, expected_result)
+
+#normal
+    def test_weight1(self):
+        data = {
+            'type': 'PREGUNTASPESO',
+            'options': [
+                    {'option': 'Option 1', 'number': 1, 'votes': 6, 'peso': 2},
+                    {'option': 'Option 2', 'number': 2, 'votes': 15, 'peso': 2},
+                    {'option': 'Option 3', 'number': 3, 'votes': 0, 'peso': 2}
+                    ],
+        }
+
+        expected_result = [
+                    {'option': 'Option 2', 'number': 2, 'votes': 15, 'peso': 2, 'postproc': 30},
+                    {'option': 'Option 1', 'number': 1, 'votes': 6, 'peso': 2, 'postproc': 12},
+                    {'option': 'Option 3', 'number': 3, 'votes': 0, 'peso': 2, 'postproc': 0}
+        ]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+#varios pesos
+    def test_weight2(self):
+        data = {
+            'type': 'PREGUNTASPESO',
+            'options': [
+                    {'option': 'Option 1', 'number': 1, 'votes': 0, 'peso': 30},
+                    {'option': 'Option 2', 'number': 2, 'votes': 10, 'peso': 10},
+                    {'option': 'Option 3', 'number': 3, 'votes': 8, 'peso': 3},
+                    {'option': 'Option 4', 'number': 4, 'votes': 5, 'peso': 1},
+                    ],
+        }
+
+        expected_result = [
+                    {'option': 'Option 2', 'number': 2, 'votes': 10, 'peso': 10, 'postproc': 100},
+                    {'option': 'Option 3', 'number': 3, 'votes': 8, 'peso': 3, 'postproc': 24},
+                    {'option': 'Option 4', 'number': 4, 'votes': 5, 'peso': 1, 'postproc': 5},
+                    {'option': 'Option 1', 'number': 1, 'votes': 0, 'peso': 30, 'postproc': 0}
+        ]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    #con pesos negativos    
+    def test_weight3(self):
+        data = {
+            'type': 'PREGUNTASPESO',
+            'options': [
+                    {'option': 'Option 1', 'number': 1, 'votes': 2, 'peso': -10},
+                    {'option': 'Option 2', 'number': 2, 'votes': 60, 'peso': -2},
+                    {'option': 'Option 3', 'number': 3, 'votes': 15, 'peso': 5},
+                    {'option': 'Option 4', 'number': 4, 'votes': 1, 'peso': 20},
+                    ],
+        }
+
+        expected_result = [
+                    {'option': 'Option 3', 'number': 3, 'votes': 15, 'peso': 5, 'postproc': 75},
+                    {'option': 'Option 4', 'number': 4, 'votes': 1, 'peso': 20, 'postproc': 20},
+                    {'option': 'Option 1', 'number': 1, 'votes': 2, 'peso': -10, 'postproc': -20},
+                    {'option': 'Option 2', 'number': 2, 'votes': 60, 'peso': -2, 'postproc': -120}
+        ]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+    
+    #con pesos a 0   
+    def test_weight4(self):
+        data = {
+            'type': 'PREGUNTASPESO',
+            'options': [
+                    {'option': 'Option 1', 'number': 1, 'votes': 0, 'peso': 0},
+                    {'option': 'Option 2', 'number': 2, 'votes': 25, 'peso': 0},
+                    {'option': 'Option 3', 'number': 3, 'votes': 11, 'peso': 0}
+                    ],
+        }
+
+        expected_result = [
+                    {'option': 'Option 1', 'number': 1, 'votes': 0, 'peso': 0, 'postproc': 0},
+                    {'option': 'Option 2', 'number': 2, 'votes': 25, 'peso': 0, 'postproc': 0},
+                    {'option': 'Option 3', 'number': 3, 'votes': 11, 'peso': 0, 'postproc': 0}
+        ]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+    
+    def test_saintelague(self):
+        data = {
+            'type': 'SAINTELAGUE',
+            'numEscanos': 7,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 340000 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 280000 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 160000 },
+                { 'option': 'Option 4', 'number': 4, 'votes': 60000 },
+            ]
+        }
+
+        expected_result = {
+            'results': [
+            { 'option': 'Option 1', 'number': 1, 'votes': 340000, 'postproc': 3 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 280000, 'postproc': 2 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 160000, 'postproc': 1 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 60000, 'postproc': 1 },
+            ]
+        }
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
         
     #Prueba 1 Imperiali con los datos de la Wikipedia
     def testImperialiFunciona(self):
@@ -317,13 +432,13 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            { 'option': 'A', 'number': 1, 'votes': 391000, 'escanosImp': 9},
-            { 'option': 'B', 'number': 2, 'votes': 311000, 'escanosImp': 7},
-            { 'option': 'C', 'number': 3, 'votes': 184000, 'escanosImp': 4},
-            { 'option': 'D', 'number': 4, 'votes': 73000, 'escanosImp': 1},
-            { 'option': 'E', 'number': 5, 'votes': 27000, 'escanosImp': 0},
-            { 'option': 'F', 'number': 6, 'votes': 12000, 'escanosImp': 0},
-            { 'option': 'G', 'number': 7, 'votes': 2000, 'escanosImp': 0},
+            { 'option': 'A', 'number': 1, 'votes': 391000, 'postproc': 9},
+            { 'option': 'B', 'number': 2, 'votes': 311000, 'postproc': 7},
+            { 'option': 'C', 'number': 3, 'votes': 184000, 'postproc': 4},
+            { 'option': 'D', 'number': 4, 'votes': 73000, 'postproc': 1},
+            { 'option': 'E', 'number': 5, 'votes': 27000, 'postproc': 0},
+            { 'option': 'F', 'number': 6, 'votes': 12000, 'postproc': 0},
+            { 'option': 'G', 'number': 7, 'votes': 2000, 'postproc': 0},
         ]
 
         response = self.client.post("/postproc/", data, format="json")
@@ -346,9 +461,9 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            { "option": "Option 1", "number": 1, "votes": 25244, "escanyos": 0 },
-            { "option": "Option 2", "number": 2, "votes": 45784, "escanyos": 1 },
-            { "option": "Option 3", "number": 3, "votes": 101366, "escanyos": 2 }
+            { "option": "Option 1", "number": 1, "votes": 25244, "postproc": 0 },
+            { "option": "Option 2", "number": 2, "votes": 45784, "postproc": 1 },
+            { "option": "Option 3", "number": 3, "votes": 101366, "postproc": 2 }
         ]
 
         response = self.client.post("/postproc/", data, format="json")
@@ -374,10 +489,10 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            {'option':'Partido A','number':1,'votes': 100000,'escanos':4},
-            {'option':'Partido B', 'number':2,'votes': 80000,'escanos':3},
-            {'option':'Partido C', 'number':3,'votes': 30000,'escanos':1},
-            {'option':'Partido D', 'number':4,'votes': 20000,'escanos':0}
+            {'option':'Partido A','number':1,'votes': 100000,'postproc':4},
+            {'option':'Partido B', 'number':2,'votes': 80000,'postproc':3},
+            {'option':'Partido C', 'number':3,'votes': 30000,'postproc':1},
+            {'option':'Partido D', 'number':4,'votes': 20000,'postproc':0}
         ]
 
         response = self.client.post('/postproc/', data, format='json')
@@ -406,16 +521,16 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            {'option':'Likud','number':1,'votes': 985408,'escanos':30},
-            {'option':'Unión Sionista', 'number':2,'votes': 786313,'escanos':24},
-            {'option':'Lista Conjunta', 'number':3,'votes': 446583,'escanos':13},
-            {'option':'Yesh Atid', 'number':4,'votes': 371602,'escanos':11},
-            {'option':'Kulanu', 'number':5,'votes': 315360,'escanos':9},
-            {'option':'La casa Judía', 'number':6,'votes': 283910,'escanos':9},
-            {'option':'Shas', 'number':7,'votes': 241613,'escanos':7},
-            {'option':'Yesh Atid', 'number':8,'votes': 214906,'escanos':6},
-            {'option':'Judaísmo Unido de la Torá', 'number':9,'votes': 210143,'escanos':6},
-            {'option':'Meretz', 'number':10,'votes': 165529,'escanos':5}
+            {'option':'Likud','number':1,'votes': 985408,'postproc':30},
+            {'option':'Unión Sionista', 'number':2,'votes': 786313,'postproc':24},
+            {'option':'Lista Conjunta', 'number':3,'votes': 446583,'postproc':13},
+            {'option':'Yesh Atid', 'number':4,'votes': 371602,'postproc':11},
+            {'option':'Kulanu', 'number':5,'votes': 315360,'postproc':9},
+            {'option':'La casa Judía', 'number':6,'votes': 283910,'postproc':9},
+            {'option':'Shas', 'number':7,'votes': 241613,'postproc':7},
+            {'option':'Yesh Atid', 'number':8,'votes': 214906,'postproc':6},
+            {'option':'Judaísmo Unido de la Torá', 'number':9,'votes': 210143,'postproc':6},
+            {'option':'Meretz', 'number':10,'votes': 165529,'postproc':5}
         ]
 
         response = self.client.post('/postproc/', data, format='json')
@@ -438,10 +553,10 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            {'option':'Partido A','number':1,'votes': 100000,'escanos':0},
-            {'option':'Partido B', 'number':2,'votes': 80000,'escanos':0},
-            {'option':'Partido C', 'number':3,'votes': 30000,'escanos':0},
-            {'option':'Partido D', 'number':4,'votes': 20000,'escanos':0}
+            {'option':'Partido A','number':1,'votes': 100000,'postproc':0},
+            {'option':'Partido B', 'number':2,'votes': 80000,'postproc':0},
+            {'option':'Partido C', 'number':3,'votes': 30000,'postproc':0},
+            {'option':'Partido D', 'number':4,'votes': 20000,'postproc':0}
 
         ]
 
@@ -466,10 +581,10 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            {'option':'Partido A','number':1,'votes': 0,'escanos':0},
-            {'option':'Partido B', 'number':2,'votes': 0,'escanos':0},
-            {'option':'Partido C', 'number':3,'votes': 0,'escanos':0},
-            {'option':'Partido D', 'number':4,'votes': 0,'escanos':0}
+            {'option':'Partido A','number':1,'votes': 0,'postproc':0},
+            {'option':'Partido B', 'number':2,'votes': 0,'postproc':0},
+            {'option':'Partido C', 'number':3,'votes': 0,'postproc':0},
+            {'option':'Partido D', 'number':4,'votes': 0,'postproc':0}
 
         ]
 
@@ -494,10 +609,10 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            {'option':'Partido A','number':1,'votes': 0,'escanos':0},
-            {'option':'Partido B', 'number':2,'votes': 0,'escanos':0},
-            {'option':'Partido C', 'number':3,'votes': 0,'escanos':0},
-            {'option':'Partido D', 'number':4,'votes': 0,'escanos':0}
+            {'option':'Partido A','number':1,'votes': 0,'postproc':0},
+            {'option':'Partido B', 'number':2,'votes': 0,'postproc':0},
+            {'option':'Partido C', 'number':3,'votes': 0,'postproc':0},
+            {'option':'Partido D', 'number':4,'votes': 0,'postproc':0}
 
         ]
 
@@ -520,10 +635,10 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            {'option':'Partido A','number':1,'votes': -100000,'escanos':0},
-            {'option':'Partido B', 'number':2,'votes': -80000,'escanos':0},
-            {'option':'Partido C', 'number':3,'votes': -30000,'escanos':0},
-            {'option':'Partido D', 'number':4,'votes': -12000,'escanos':0}
+            {'option':'Partido A','number':1,'votes': -100000,'postproc':0},
+            {'option':'Partido B', 'number':2,'votes': -80000,'postproc':0},
+            {'option':'Partido C', 'number':3,'votes': -30000,'postproc':0},
+            {'option':'Partido D', 'number':4,'votes': -12000,'postproc':0}
 
         ]
 
@@ -548,10 +663,10 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            {'option':'Partido A','number':1,'votes': 100000,'escanos':0},
-            {'option':'Partido B', 'number':2,'votes': 80000,'escanos':0},
-            {'option':'Partido C', 'number':3,'votes': 30000,'escanos':0},
-            {'option':'Partido D', 'number':4,'votes': 12000,'escanos':0}
+            {'option':'Partido A','number':1,'votes': 100000,'postproc':0},
+            {'option':'Partido B', 'number':2,'votes': 80000,'postproc':0},
+            {'option':'Partido C', 'number':3,'votes': 30000,'postproc':0},
+            {'option':'Partido D', 'number':4,'votes': 12000,'postproc':0}
         ]
 
         response = self.client.post('/postproc/', data, format='json')
@@ -574,10 +689,10 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            {'option':'Partido A','number':1,'votes': 100000,'escanos':0},
-            {'option':'Partido B', 'number':2,'votes': 80000,'escanos':0},
-            {'option':'Partido C', 'number':3,'votes': 30000,'escanos':0},
-            {'option':'Partido D', 'number':4,'votes': 12000,'escanos':0}
+            {'option':'Partido A','number':1,'votes': 100000,'postproc':0},
+            {'option':'Partido B', 'number':2,'votes': 80000,'postproc':0},
+            {'option':'Partido C', 'number':3,'votes': 30000,'postproc':0},
+            {'option':'Partido D', 'number':4,'votes': 12000,'postproc':0}
           
           ]
 
@@ -602,12 +717,12 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            {'option':'OPT1','number':1,'votes': 12000, 'escanos': 0},
-            {'option':'OPT2','number':2,'votes': 140000, 'escanos': 2},
-            {'option':'OPT3','number':3,'votes': 110000, 'escanos': 2},
-            {'option':'OPT4','number':4,'votes': 205000, 'escanos': 4},
-            {'option':'OPT5','number':5,'votes': 150000, 'escanos': 2},
-            {'option':'OPT6','number':6,'votes': 16000, 'escanos': 0}
+            {'option':'OPT1','number':1,'votes': 12000, 'postproc': 0},
+            {'option':'OPT2','number':2,'votes': 140000, 'postproc': 2},
+            {'option':'OPT3','number':3,'votes': 110000, 'postproc': 2},
+            {'option':'OPT4','number':4,'votes': 205000, 'postproc': 4},
+            {'option':'OPT5','number':5,'votes': 150000, 'postproc': 2},
+            {'option':'OPT6','number':6,'votes': 16000, 'postproc': 0}
         ]
 
         response = self.client.post('/postproc/', data, format='json')
@@ -655,16 +770,16 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            {'option':'OPT1','number':1,'votes': 646556,'escanos': 3},
-            {'option':'OPT2','number':2,'votes': 452154,'escanos': 2},
-            {'option':'OPT3','number':3,'votes': 481216,'escanos': 2},
-            {'option':'OPT4','number':4,'votes': 848654,'escanos': 4},
-            {'option':'OPT5','number':5,'votes': 879564,'escanos': 5},
-            {'option':'OPT6','number':6,'votes': 648321,'escanos': 3},
-            {'option':'OPT7','number':7,'votes': 143210,'escanos': 0},
-            {'option':'OPT8','number':8,'votes': 896483,'escanos': 5},
-            {'option':'OPT9','number':9,'votes': 874684,'escanos': 5},
-            {'option':'OPT10','number':10,'votes': 648545,'escanos': 3}
+            {'option':'OPT1','number':1,'votes': 646556,'postproc': 3},
+            {'option':'OPT2','number':2,'votes': 452154,'postproc': 2},
+            {'option':'OPT3','number':3,'votes': 481216,'postproc': 2},
+            {'option':'OPT4','number':4,'votes': 848654,'postproc': 4},
+            {'option':'OPT5','number':5,'votes': 879564,'postproc': 5},
+            {'option':'OPT6','number':6,'votes': 648321,'postproc': 3},
+            {'option':'OPT7','number':7,'votes': 143210,'postproc': 0},
+            {'option':'OPT8','number':8,'votes': 896483,'postproc': 5},
+            {'option':'OPT9','number':9,'votes': 874684,'postproc': 5},
+            {'option':'OPT10','number':10,'votes': 648545,'postproc': 3}
         ]
 
         response = self.client.post('/postproc/', data, format='json')
@@ -687,11 +802,11 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            {'option':'OPT1','number':1,'votes': 32142,'escanos': 0},
-            {'option':'OPT2','number':2,'votes': 64315,'escanos': 0},
-            {'option':'OPT3','number':3,'votes': 97845,'escanos': 0},
-            {'option':'OPT4','number':4,'votes': 31645,'escanos': 0},
-            {'option':'OPT5','number':5,'votes': 97645,'escanos': 0}
+            {'option':'OPT1','number':1,'votes': 32142,'postproc': 0},
+            {'option':'OPT2','number':2,'votes': 64315,'postproc': 0},
+            {'option':'OPT3','number':3,'votes': 97845,'postproc': 0},
+            {'option':'OPT4','number':4,'votes': 31645,'postproc': 0},
+            {'option':'OPT5','number':5,'votes': 97645,'postproc': 0}
         ]
 
         response = self.client.post('/postproc/', data, format='json')
@@ -711,8 +826,8 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            {'option':'OPT1','number':1,'votes': 34124611,'escanos': 10},
-            {'option':'OPT2','number':2,'votes': 34124611,'escanos': 10}
+            {'option':'OPT1','number':1,'votes': 34124611,'postproc': 10},
+            {'option':'OPT2','number':2,'votes': 34124611,'postproc': 10}
         ]
 
         response = self.client.post('/postproc/', data, format='json')
@@ -757,13 +872,13 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            {'option':'OPT1','number':1,'votes': 65155,'escanos': 0},
-            {'option':'OPT2','number':2,'votes': 89498,'escanos': 0},
-            {'option':'OPT3','number':3,'votes': 8645151,'escanos': 47},
-            {'option':'OPT4','number':4,'votes': 65311,'escanos': 0},
-            {'option':'OPT5','number':5,'votes': 8784565,'escanos': 48},
-            {'option':'OPT6','number':6,'votes': 32151,'escanos': 0},
-            {'option':'OPT7','number':7,'votes': 987515,'escanos': 5}
+            {'option':'OPT1','number':1,'votes': 65155,'postproc': 0},
+            {'option':'OPT2','number':2,'votes': 89498,'postproc': 0},
+            {'option':'OPT3','number':3,'votes': 8645151,'postproc': 47},
+            {'option':'OPT4','number':4,'votes': 65311,'postproc': 0},
+            {'option':'OPT5','number':5,'votes': 8784565,'postproc': 48},
+            {'option':'OPT6','number':6,'votes': 32151,'postproc': 0},
+            {'option':'OPT7','number':7,'votes': 987515,'postproc': 5}
 
         ]
 
@@ -785,9 +900,9 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            {'option':'OPT1','number':1,'votes': 846245435646644,'escanos': 65},
-            {'option':'OPT2','number':2,'votes': 931654454532151,'escanos': 72},
-            {'option':'OPT3','number':3,'votes': 821564325158125,'escanos': 63}
+            {'option':'OPT1','number':1,'votes': 846245435646644,'postproc': 65},
+            {'option':'OPT2','number':2,'votes': 931654454532151,'postproc': 72},
+            {'option':'OPT3','number':3,'votes': 821564325158125,'postproc': 63}
         ]
 
         response = self.client.post('/postproc/', data, format='json')
@@ -809,9 +924,9 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            { "option": "Option 1", "number": 1, "votes": 25244, "escanyos": 1 },
-            { "option": "Option 2", "number": 2, "votes": 45784, "escanyos": 1 },
-            { "option": "Option 3", "number": 3, "votes": 101366, "escanyos": 2 },
+            { "option": "Option 1", "number": 1, "votes": 25244, "postproc": 1 },
+            { "option": "Option 2", "number": 2, "votes": 45784, "postproc": 1 },
+            { "option": "Option 3", "number": 3, "votes": 101366, "postproc": 2 },
         ]
 
         response = self.client.post("/postproc/", data, format="json")
@@ -820,6 +935,33 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
+    def test_danish3(self):
+        data = {
+            "type": "DANISH",
+            "options": [
+                { "option": "Option 1", "number": 1, "votes": 72000},
+                { "option": "Option 2", "number": 2, "votes": 60000},
+                { "option": "Option 3", "number": 3, "votes": 28000},
+                { "option": "Option 4", "number": 4, "votes": 24000},
+                { "option": "Option 5", "number": 5, "votes": 16000}
+            ], 
+            'numEscanos': 5
+
+        }
+
+        expected_result = [
+                { "option": "Option 1", "number": 1, "votes": 72000, "postproc": 2 },
+                { "option": "Option 2", "number": 2, "votes": 60000, "postproc": 1 },
+                { "option": "Option 3", "number": 3, "votes": 28000, "postproc": 1 },
+                { "option": "Option 4", "number": 4, "votes": 24000, "postproc": 1 },
+                { "option": "Option 5", "number": 5, "votes": 16000, "postproc": 0 }
+        ]
+
+        response = self.client.post("/postproc/", data, format="json")
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
     #Prueba 2 Imperiali con numEscanos=0   
     def testImperialiNoEscanos(self):
         
@@ -839,13 +981,13 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            { 'option': 'A', 'number': 1, 'votes': 391000, 'escanosImp': 0},
-            { 'option': 'B', 'number': 2, 'votes': 311000, 'escanosImp': 0},
-            { 'option': 'C', 'number': 3, 'votes': 184000, 'escanosImp': 0},
-            { 'option': 'D', 'number': 4, 'votes': 73000, 'escanosImp': 0},
-            { 'option': 'E', 'number': 5, 'votes': 27000, 'escanosImp': 0},
-            { 'option': 'F', 'number': 6, 'votes': 12000, 'escanosImp': 0},
-            { 'option': 'G', 'number': 7, 'votes': 2000, 'escanosImp': 0},
+            { 'option': 'A', 'number': 1, 'votes': 391000, 'postproc': 0},
+            { 'option': 'B', 'number': 2, 'votes': 311000, 'postproc': 0},
+            { 'option': 'C', 'number': 3, 'votes': 184000, 'postproc': 0},
+            { 'option': 'D', 'number': 4, 'votes': 73000, 'postproc': 0},
+            { 'option': 'E', 'number': 5, 'votes': 27000, 'postproc': 0},
+            { 'option': 'F', 'number': 6, 'votes': 12000, 'postproc': 0},
+            { 'option': 'G', 'number': 7, 'votes': 2000, 'postproc': 0},
         ]
 
         response = self.client.post('/postproc/', data, format='json')
@@ -873,15 +1015,65 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            { 'option': 'A', 'number': 1, 'votes': 391000, 'escanosImp': 0},
-            { 'option': 'B', 'number': 2, 'votes': 311000, 'escanosImp': 0},
-            { 'option': 'C', 'number': 3, 'votes': 184000, 'escanosImp': 0},
-            { 'option': 'D', 'number': 4, 'votes': 73000, 'escanosImp': 0},
-            { 'option': 'E', 'number': 5, 'votes': 27000, 'escanosImp': 0},
-            { 'option': 'F', 'number': 6, 'votes': 12000, 'escanosImp': 0},
-            { 'option': 'G', 'number': 7, 'votes': 2000, 'escanosImp': 0},
+            { 'option': 'A', 'number': 1, 'votes': 391000, 'postproc': 0},
+            { 'option': 'B', 'number': 2, 'votes': 311000, 'postproc': 0},
+            { 'option': 'C', 'number': 3, 'votes': 184000, 'postproc': 0},
+            { 'option': 'D', 'number': 4, 'votes': 73000, 'postproc': 0},
+            { 'option': 'E', 'number': 5, 'votes': 27000, 'postproc': 0},
+            { 'option': 'F', 'number': 6, 'votes': 12000, 'postproc': 0},
+            { 'option': 'G', 'number': 7, 'votes': 2000, 'postproc': 0},
         ]
 
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    def test_danish4(self):
+        data = {
+            "type": "DANISH",
+            "options": [
+                { "option": "Option 1", "number": 1, "votes": 296729},
+                { "option": "Option 2", "number": 2, "votes": 46573},
+                { "option": "Option 3", "number": 3, "votes": 44227},
+                { "option": "Option 4", "number": 4, "votes": 25410}
+            ], 
+            'numEscanos': 8
+
+        }
+
+        expected_result = [
+                { "option": "Option 1", "number": 1, "votes": 296729, "postproc": 5 },
+                { "option": "Option 2", "number": 2, "votes": 46573, "postproc": 1 },
+                { "option": "Option 3", "number": 3, "votes": 44227, "postproc": 1 },
+                { "option": "Option 4", "number": 4, "votes": 25410, "postproc": 1 }
+        ]
+
+        response = self.client.post("/postproc/", data, format="json")
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    def test_saintelague2(self):
+        data = {
+            'type': 'SAINTELAGUE',
+            'numEscanos': 5,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 20 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 60 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 10 },
+            ]
+        }
+
+        expected_result = {
+            'results': [
+            { 'option': 'Option 2', 'number': 2, 'votes': 60, 'postproc': 3 },
+            { 'option': 'Option 1', 'number': 1, 'votes': 20, 'postproc': 1 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 10, 'postproc': 1 },
+            ]
+        }
         response = self.client.post('/postproc/', data, format='json')
         self.assertEqual(response.status_code, 200)
 
@@ -907,16 +1099,42 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            { 'option': 'A', 'number': 1, 'votes': 0, 'escanosImp': 0},
-            { 'option': 'B', 'number': 2, 'votes': 0, 'escanosImp': 0},
-            { 'option': 'C', 'number': 3, 'votes': 0, 'escanosImp': 0},
-            { 'option': 'D', 'number': 4, 'votes': 0, 'escanosImp': 0},
-            { 'option': 'E', 'number': 5, 'votes': 0, 'escanosImp': 0},
-            { 'option': 'F', 'number': 6, 'votes': 0, 'escanosImp': 0},
-            { 'option': 'G', 'number': 7, 'votes': 0, 'escanosImp': 0},
+            { 'option': 'A', 'number': 1, 'votes': 0, 'postproc': 0},
+            { 'option': 'B', 'number': 2, 'votes': 0, 'postproc': 0},
+            { 'option': 'C', 'number': 3, 'votes': 0, 'postproc': 0},
+            { 'option': 'D', 'number': 4, 'votes': 0, 'postproc': 0},
+            { 'option': 'E', 'number': 5, 'votes': 0, 'postproc': 0},
+            { 'option': 'F', 'number': 6, 'votes': 0, 'postproc': 0},
+            { 'option': 'G', 'number': 7, 'votes': 0, 'postproc': 0},
         ]
 
         response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+    
+    def test_danish5(self):
+        data = {
+            "type": "DANISH",
+            "options": [
+                { "option": "Option 1", "number": 1, "votes": 296729},
+                { "option": "Option 2", "number": 2, "votes": 46573},
+                { "option": "Option 3", "number": 3, "votes": 44227},
+                { "option": "Option 4", "number": 4, "votes": 25410}
+            ], 
+            'numEscanos': 5
+
+        }
+
+        expected_result = [
+                { "option": "Option 1", "number": 1, "votes": 296729, "postproc": 3 },
+                { "option": "Option 2", "number": 2, "votes": 46573, "postproc": 1 },
+                { "option": "Option 3", "number": 3, "votes": 44227, "postproc": 1 },
+                { "option": "Option 4", "number": 4, "votes": 25410, "postproc": 0 }
+        ]
+
+        response = self.client.post("/postproc/", data, format="json")
         self.assertEqual(response.status_code, 200)
 
         values = response.json()
@@ -941,13 +1159,13 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            { 'option': 'A', 'number': 1, 'votes': 0, 'escanosImp': 0},
-            { 'option': 'B', 'number': 2, 'votes': 0, 'escanosImp': 0},
-            { 'option': 'C', 'number': 3, 'votes': 0, 'escanosImp': 0},
-            { 'option': 'D', 'number': 4, 'votes': 0, 'escanosImp': 0},
-            { 'option': 'E', 'number': 5, 'votes': 0, 'escanosImp': 0},
-            { 'option': 'F', 'number': 6, 'votes': 0, 'escanosImp': 0},
-            { 'option': 'G', 'number': 7, 'votes': 0, 'escanosImp': 0},
+            { 'option': 'A', 'number': 1, 'votes': 0, 'postproc': 0},
+            { 'option': 'B', 'number': 2, 'votes': 0, 'postproc': 0},
+            { 'option': 'C', 'number': 3, 'votes': 0, 'postproc': 0},
+            { 'option': 'D', 'number': 4, 'votes': 0, 'postproc': 0},
+            { 'option': 'E', 'number': 5, 'votes': 0, 'postproc': 0},
+            { 'option': 'F', 'number': 6, 'votes': 0, 'postproc': 0},
+            { 'option': 'G', 'number': 7, 'votes': 0, 'postproc': 0},
         ]
 
         response = self.client.post('/postproc/', data, format='json')
@@ -975,6 +1193,34 @@ class PostProcTestCase(APITestCase):
 
         values = response.json()
         self.assertEqual(values, expected_result)
+    
+    def test_danish6(self):
+        data = {
+            "type": "DANISH",
+            "options": [
+                { "option": "Option 1", "number": 1, "votes": 72000},
+                { "option": "Option 2", "number": 2, "votes": 60000},
+                { "option": "Option 3", "number": 3, "votes": 28000},
+                { "option": "Option 4", "number": 4, "votes": 24000},
+                { "option": "Option 5", "number": 5, "votes": 16000}
+            ], 
+            'numEscanos': 4
+
+        }
+
+        expected_result = [
+                { "option": "Option 1", "number": 1, "votes": 72000, "postproc": 1 },
+                { "option": "Option 2", "number": 2, "votes": 60000, "postproc": 1 },
+                { "option": "Option 3", "number": 3, "votes": 28000, "postproc": 1 },
+                { "option": "Option 4", "number": 4, "votes": 24000, "postproc": 1 },
+                { "option": "Option 5", "number": 5, "votes": 16000, "postproc": 0 }
+        ]
+
+        response = self.client.post("/postproc/", data, format="json")
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
 
    #Prueba 7 Imperiali mismos votos
     def testImperialiConMismosVotos(self):
@@ -991,8 +1237,8 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            { 'option': 'A', 'number': 1, 'votes': 1000, 'escanosImp': 10},
-            { 'option': 'B', 'number': 2, 'votes': 1000, 'escanosImp': 10},
+            { 'option': 'A', 'number': 1, 'votes': 1000, 'postproc': 10},
+            { 'option': 'B', 'number': 2, 'votes': 1000, 'postproc': 10},
 
         ]
 
@@ -1001,5 +1247,162 @@ class PostProcTestCase(APITestCase):
 
         values = response.json()
         self.assertEqual(values, expected_result)
+
+    #Prueba 8 Imperiali menos votos que ecanos y numEscanos divisible entre el numero de opciones
+    def testImperialiMenosVotosQueEscanosDivisible(self):
+        
+        data = {
+            'type': 'IMPERIALI',
+            'options': [
+                { 'option': 'A', 'number': 1, 'votes': 4 },
+                { 'option': 'B', 'number': 2, 'votes': 1 },
+
+            ],
+            'numEscanos': 20,   
+        }
+        expected_result = [
+            { 'option': 'A', 'number': 1, 'votes': 4, 'postproc': 10},
+            { 'option': 'B', 'number': 2, 'votes': 1, 'postproc': 10},
+        ]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    #Prueba 9 Imperiali menos votos que ecanos y numEscanos NO divisible entre el numero de opciones
+    def testImperialiMenosVotosQueEscanosNoDivisible(self):
+        
+        data = {
+            'type': 'IMPERIALI',
+            'options': [
+                { 'option': 'A', 'number': 1, 'votes': 4 },
+                { 'option': 'B', 'number': 2, 'votes': 1 },
+
+            ],
+            'numEscanos': 21,   
+        }
+        expected_result = [
+            { 'option': 'A', 'number': 1, 'votes': 4, 'postproc': 11},
+            { 'option': 'B', 'number': 2, 'votes': 1, 'postproc': 10},
+        ]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    def test_saintelague3(self):
+        data = {
+            'type': 'SAINTELAGUE',
+            'numEscanos': 4,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 1000 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 800 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 750 },
+                { 'option': 'Option 4', 'number': 4, 'votes': 600 },
+                { 'option': 'Option 5', 'number': 5, 'votes': 350 },
+            ]
+        }
+
+        expected_result = {
+            'results': [
+            { 'option': 'Option 1', 'number': 1, 'votes': 1000, 'postproc': 1 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 800, 'postproc': 1 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 750, 'postproc': 1 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 600, 'postproc': 1 },
+            { 'option': 'Option 5', 'number': 5, 'votes': 350, 'postproc': 0 },
+            ]
+        }
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    def test_saintelague4(self):
+        data = {
+            'type': 'SAINTELAGUE',
+            'numEscanos': 0,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 1000 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 800 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 750 },
+                { 'option': 'Option 4', 'number': 4, 'votes': 600 },
+                { 'option': 'Option 5', 'number': 5, 'votes': 350 },
+            ]
+        }
+
+        expected_result = {
+            'results': [
+            { 'option': 'Option 1', 'number': 1, 'votes': 1000, 'postproc': 0 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 800, 'postproc': 0 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 750, 'postproc': 0 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 600, 'postproc': 0 },
+            { 'option': 'Option 5', 'number': 5, 'votes': 350, 'postproc': 0 },
+            ]
+        }
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    def test_saintelague5(self):
+        data = {
+            'type': 'SAINTELAGUE',
+            'numEscanos': 4,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 0 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 0 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 0 },
+                { 'option': 'Option 4', 'number': 4, 'votes': 0 },
+                { 'option': 'Option 5', 'number': 5, 'votes': 0 },
+            ]
+        }
+
+        expected_result = {
+            'results': [
+            { 'option': 'Option 1', 'number': 1, 'votes': 0, 'postproc': 0 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 0, 'postproc': 0 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 0, 'postproc': 0 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 0, 'postproc': 0 },
+            { 'option': 'Option 5', 'number': 5, 'votes': 0, 'postproc': 0 },
+            ]
+        }
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    def test_saintelague6(self):
+        data = {
+            'type': 'SAINTELAGUE',
+            'numEscanos': -4,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 1000 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 800 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 750 },
+                { 'option': 'Option 4', 'number': 4, 'votes': 600 },
+                { 'option': 'Option 5', 'number': 5, 'votes': 350 },
+            ]
+        }
+
+        expected_result = {
+            'results': [
+            ]
+        }
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    
+
+
 
    
