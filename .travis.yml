@@ -23,3 +23,8 @@ before_script:
   - python manage.py migrate
 script:
   - python manage.py test
+deploy:
+  provider: heroku
+  app: guarrizas-postproc
+  strategy: git
+  api_key: $HEROKU_AUTH_TOKEN
