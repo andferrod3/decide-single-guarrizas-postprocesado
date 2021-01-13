@@ -69,7 +69,7 @@ MODULES = [
     'voting',
 ]
 
-BASEURL = 'https://decide-single-guarrizas-postpr.herokuapp.com'
+BASEURL = 'https://guarrizas-postproc.herokuapp.com'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -181,7 +181,6 @@ if os.path.exists("config.jsonnet"):
 
 
 INSTALLED_APPS = INSTALLED_APPS + MODULES
-
 
 import django_heroku
 django_heroku.settings(locals())
