@@ -207,6 +207,18 @@ class VotingTestCase(BaseTestCase):
         response = self.client.post('/voting/', data, format='json')
         self.assertEqual(response.status_code, 201)
 
+        data = {
+            'name': 'Example',
+            'desc': 'Description example',
+            'tipo': 'PREGUNTASPESO',
+            'numEscanos': '10',
+            'question': 'I want a ',
+            'question_opt': ['cat', 'dog', 'horse']
+        }
+
+        response = self.client.post('/voting/', data, format='json')
+        self.assertEqual(response.status_code, 201)
+
     def test_update_voting(self):
         voting = self.create_voting()
 
