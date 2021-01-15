@@ -23,6 +23,9 @@ before_script:
   - python manage.py migrate
 script:
   - python manage.py test
+  - coverage run --branch --source=. ./manage.py test --keepdb --with-xunit
+  - coverage xml
+  - python-codacy-coverage -r coverage.xml
 deploy:
   provider: heroku
   app: guarrizas-postproc
