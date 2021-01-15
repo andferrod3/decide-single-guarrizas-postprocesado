@@ -22,7 +22,6 @@ before_script:
   - psql -U postgres -c "ALTER USER guarrizas CREATEDB"
   - python manage.py migrate
 script:
-  - python manage.py test
   - coverage run --branch --source=. ./manage.py test --keepdb
   - coverage xml
   - python-codacy-coverage -r coverage.xml
