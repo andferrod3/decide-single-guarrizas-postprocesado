@@ -12,7 +12,7 @@ from locust import (
 
 
 HOST = "http://localhost:8001"
-VOTING = 8
+VOTING = 1
 
 
 class DefVisualizer(TaskSet):
@@ -62,33 +62,6 @@ class DefVoters(SequentialTaskSet):
     def on_quit(self):
         self.voter = None
 
-class DefPostproc(SequentialTaskSet):
-    @task
-    def login(self):
-        
-        self.token = self.client.post("/authentication/login/", {
-            "username": 'guarrizas',
-            "password": 'egc202021',
-        }).json()
-
-    @task
-    def getuser(self):
-        self.usr= self.client.post("/authentication/getuser/", self.token).json()
-        print( str(self.user))
-
-    @task
-    def postproc(self):
-        headers = {
-            'Authorization': 'Token ' + self.token.get('token'),
-            'content-type': 'application/json'
-        }
-        data = {'action': 'tally', "token": self.token.get('token')}
-        self.client.put('/voting/{}/'.format(VOTING), json.dumps({'action': 'tally', "token": self.token.get('token')}) , headers=headers)
-
-class Postproc(HttpUser):
-    host = HOST
-    tasks = [DefPostproc]
-    wait_time = between(3,5)
 
 class Visualizer(HttpUser):
     host = HOST
