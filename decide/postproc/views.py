@@ -27,11 +27,22 @@ class PostProcView(APIView):
     def multiPreguntas(self, questions):
         for question in questions:
             for opt in question:
-                opt['postproc'] = opt['votes'];
+                opt['postproc'] = opt['votes']
 
             question.sort(key=lambda x: -x['postproc'])
 
         return Response(questions)
+
+    def pesoPorPreguntas(self, options):
+        out = []
+        for opt in options:
+            out.append({
+                **opt,
+                'postproc': opt['votes'] * opt['peso'],
+            })
+
+        out.sort(key=lambda x: -x['postproc'])
+        return Response(out)
 
 
     def imperialiYResiduo(self, numEscanos, options):
@@ -41,33 +52,43 @@ class PostProcView(APIView):
             votosTotales += x['votes']
 
         if votosTotales > 0 and numEscanos > 0:
-
-            q = round(votosTotales / (numEscanos+2), 0)
-            
-            escanosAsignados = 0
-            for x in options:
-                escanosSuelo = math.trunc(x['votes']/q)
-                x.update({'postproc' : escanosSuelo})
-                escanosAsignados += x['postproc']               
-
-            #Si quedan escaños libres
-            while(escanosAsignados < numEscanos):
+            if votosTotales>(numEscanos+2):
+                q = round(votosTotales / (numEscanos+2), 0)
+                
+                escanosAsignados = 0
                 for x in options:
-                    x.update({ 
-                        'escanosRes' : x['votes'] - (q * x['postproc'])})
+                    escanosSuelo = math.trunc(x['votes']/q)
+                    x.update({'postproc' : escanosSuelo})
+                    escanosAsignados += x['postproc']               
 
-                options.sort(key=lambda x : -x['escanosRes'])
+                #Si quedan escaños libres
+                while(escanosAsignados < numEscanos):
+                    for x in options:
+                        x.update({ 
+                            'escanosRes' : x['votes'] - (q * x['postproc'])})
 
-                opcionMasVotosResiduo = options[0]
-                opcionMasVotosResiduo.update({
-                'postproc' : opcionMasVotosResiduo['postproc'] + 1})
-                escanosAsignados += 1
+                    options.sort(key=lambda x : -x['escanosRes'])
 
-                #Lo borramos para que no este como atributo
-                for i in options:
-                    i.pop('escanosRes')
-            options.sort(key=lambda x : -x['postproc'])
-            
+                    opcionMasVotosResiduo = options[0]
+                    opcionMasVotosResiduo.update({
+                    'postproc' : opcionMasVotosResiduo['postproc'] + 1})
+                    escanosAsignados += 1
+
+                    #Lo borramos para que no este como atributo
+                    for i in options:
+                        i.pop('escanosRes')
+                options.sort(key=lambda x : -x['postproc'])
+            else:
+                escanosAsignadosQ= 0
+                for x in options:
+                    escanosQ= math.trunc(numEscanos/ len(options))
+                    x.update({'postproc' : escanosQ}) 
+                    escanosAsignadosQ += x['postproc']
+                
+                if escanosAsignadosQ < numEscanos:
+                    for x in options:
+                        options.sort(key=lambda x : -x['votes'])
+                    options[0].update({'postproc' : options[0]['postproc']+1})
             return Response(options)
         else:
             for x in options:
@@ -145,7 +166,7 @@ class PostProcView(APIView):
         #Creamos una lista de tamaño igual al numero de escaños. 
         #Es la secuencia usada para cada opcion, dividir el numero de votos entre cada una de los valores de la lista
         #para asi sacar los cocientes. 
-        #La secuencia comienza en 1 y continua sumandole 3 al anterior. pj: para 4 escaños = (1,3,7,10)
+        #La secuencia comienza en 1 y continua sumandole 3 al anterior. pj: para 4 escaños = (1,4,7,10)
         serie=[]
         serie.append(1)
         for i in range(1, escañosTotales):
@@ -206,21 +227,21 @@ class PostProcView(APIView):
 
     def saintelague(self,options,escanos):
         results = []
-        for opt in options:
-            results.append({
-                    **opt,
-                    'postproc': 0,
-                })
-        for i in range(escanos):
-            maximo = max(options, key=lambda opt: opt['votes'])
-            ganador_escano = next((o for o in results if o['option'] == maximo['option']), None)
-            ganador_escano['postproc'] = ganador_escano['postproc'] + 1
-            ganador_escano = next((o for o in results if o['option'] == maximo['option']), None)
-            maximo['votes'] = ganador_escano['votes']//(2*ganador_escano['postproc'] +1)
-        
-        results.sort(key=lambda x: -x['postproc'])
+        if escanos >= 0:
+            for opt in options:
+                results.append({
+                        **opt,
+                        'postproc': 0,
+                    })
+            for i in range(escanos):
+                if opt['votes'] != 0:
+                    maximo = max(options, key=lambda opt: opt['votes'])
+                    ganador_escano = next((o for o in results if o['option'] == maximo['option']), None)
+                    ganador_escano['postproc'] = ganador_escano['postproc'] + 1
+                    maximo['votes'] = ganador_escano['votes']//(2*ganador_escano['postproc'] +1)
+            
+            results.sort(key=lambda x: -x['postproc'])
         out = {'results': results}
-        print(results)
         return Response(out)
 
     def post(self, request):
@@ -255,6 +276,8 @@ class PostProcView(APIView):
         elif t == 'MULTIPREGUNTAS':
             questions = request.data.get('questions', [])
             return self.multiPreguntas(questions)
+        elif t == 'PREGUNTASPESO':
+            return self.pesoPorPreguntas(opts)
         elif t == 'SAINTELAGUE':
             return self.saintelague(opts,numEscanos)
 

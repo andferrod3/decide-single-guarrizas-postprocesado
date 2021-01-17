@@ -39,14 +39,15 @@ class Voting(models.Model):
     end_date = models.DateTimeField(blank=True, null=True)
 
     tipo_votacion = [("IDENTITY", "IDENTITY"), ("IMPERIALI", "IMPERIALI"), ("HUNTINGTONHILL", "HUNTINGTONHILL"), ("DANISH", "DANISH"),
-    ("DHONT", "DHONT"), ("MULTIPREGUNTAS", "MULTIPREGUNTAS"), ("SAINTELAGUE", "SAINTELAGUE")]
+    ("DHONT", "DHONT"), ("MULTIPREGUNTAS", "MULTIPREGUNTAS"), ("SAINTELAGUE", "SAINTELAGUE"), ("PREGUNTASPESO", "PREGUNTASPESO")]
 
-    tipo = models.CharField(choices=tipo_votacion, max_length=20, default="IDENTITY", verbose_name='Count method')
+    tipo = models.CharField(choices=tipo_votacion, max_length=20, default="IMPERIALI", verbose_name='Count method')
 
     numEscanos = models.PositiveIntegerField(blank=True, null=True, default=0, verbose_name='Seats')
 
     pub_key = models.OneToOneField(Key, related_name='voting', blank=True, null=True, on_delete=models.SET_NULL)
     auths = models.ManyToManyField(Auth, related_name='votings')
+
 
     tally = JSONField(blank=True, null=True)
     postproc = JSONField(blank=True, null=True)

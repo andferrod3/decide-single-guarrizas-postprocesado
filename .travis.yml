@@ -16,10 +16,17 @@ install:
   - pip install -r ../requirements.txt
   - pip install codacy-coverage
 before_script:
-  - cp local_settings.travis.py local_settings.py
+  - cp travis_local_settings.py local_settings.py
   - psql -U postgres -c "create user guarrizas password 'guarrizas'"
   - psql -U postgres -c "create database test_guarrizas_db owner guarrizas"
   - psql -U postgres -c "ALTER USER guarrizas CREATEDB"
   - python manage.py migrate
 script:
-  - python manage.py test
+  - coverage run --branch --source=. ./manage.py test --keepdb
+  - coverage xml
+  - python-codacy-coverage -r coverage.xml
+deploy:
+  provider: heroku
+  app: guarrizas-postproc
+  strategy: git
+  api_key: $HEROKU_AUTH_TOKEN

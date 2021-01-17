@@ -53,7 +53,6 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.QueryParameterVersioning'
 }
-
 AUTHENTICATION_BACKENDS = [
     'base.backends.AuthBackend',
 ]
@@ -166,6 +165,8 @@ APIS = {}
 # Versioning
 ALLOWED_VERSIONS = ['v1', 'v2']
 DEFAULT_VERSION = 'v1'
+
+APIS = {}
 
 try:
     from local_settings import *
