@@ -2,9 +2,9 @@ import json
 import requests
 
 
-HOST = "http://localhost:8000"
-USER = "admin"
-PASS = "admin"
+HOST = "http://localhost:8001"
+USER = "guarrizas"
+PASS = "egc202021"
 VOTING = 1
 
 
