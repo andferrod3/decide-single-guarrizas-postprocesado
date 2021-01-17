@@ -166,7 +166,7 @@ class PostProcView(APIView):
         #Creamos una lista de tamaño igual al numero de escaños. 
         #Es la secuencia usada para cada opcion, dividir el numero de votos entre cada una de los valores de la lista
         #para asi sacar los cocientes. 
-        #La secuencia comienza en 1 y continua sumandole 3 al anterior. pj: para 4 escaños = (1,3,7,10)
+        #La secuencia comienza en 1 y continua sumandole 3 al anterior. pj: para 4 escaños = (1,4,7,10)
         serie=[]
         serie.append(1)
         for i in range(1, escañosTotales):
@@ -225,24 +225,23 @@ class PostProcView(APIView):
         return Response(options)
 
 
-    def saintelague(self,options,escanos):
-        results = []
-        if escanos >= 0:
+    def saintelague(self,options,numEscanos):
+        for opt in options:
+            opt['postproc'] = 0
+
+        for i in range(0, numEscanos):
+            options_copy = []
             for opt in options:
-                results.append({
-                        **opt,
-                        'postproc': 0,
-                    })
-            for i in range(escanos):
-                if opt['votes'] != 0:
-                    maximo = max(options, key=lambda opt: opt['votes'])
-                    ganador_escano = next((o for o in results if o['option'] == maximo['option']), None)
-                    ganador_escano['postproc'] = ganador_escano['postproc'] + 1
-                    maximo['votes'] = ganador_escano['votes']//(2*ganador_escano['postproc'] +1)
-            
-            results.sort(key=lambda x: -x['postproc'])
-        out = {'results': results}
-        return Response(out)
+                o = opt['votes'] / (2*opt['postproc']+1)
+                options_copy.append(o)
+
+            if opt['votes'] != 0:
+                maximo = max(options_copy)
+                pos_maximo = options_copy.index(maximo)
+                options[pos_maximo]['postproc'] += 1
+        
+        options.sort(key=lambda x: -x['postproc'])
+        return Response(options)
 
     def post(self, request):
         """
