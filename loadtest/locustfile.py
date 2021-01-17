@@ -11,7 +11,7 @@ from locust import (
 )
 
 
-HOST = "http://localhost:8000"
+HOST = "http://localhost:8001"
 VOTING = 1
 
 
@@ -61,6 +61,7 @@ class DefVoters(SequentialTaskSet):
 
     def on_quit(self):
         self.voter = None
+
 
 class Visualizer(HttpUser):
     host = HOST

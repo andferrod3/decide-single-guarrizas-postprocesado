@@ -166,7 +166,7 @@ class PostProcView(APIView):
         #Creamos una lista de tamaño igual al numero de escaños. 
         #Es la secuencia usada para cada opcion, dividir el numero de votos entre cada una de los valores de la lista
         #para asi sacar los cocientes. 
-        #La secuencia comienza en 1 y continua sumandole 3 al anterior. pj: para 4 escaños = (1,3,7,10)
+        #La secuencia comienza en 1 y continua sumandole 3 al anterior. pj: para 4 escaños = (1,4,7,10)
         serie=[]
         serie.append(1)
         for i in range(1, escañosTotales):
