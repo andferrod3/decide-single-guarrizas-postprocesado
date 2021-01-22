@@ -23,6 +23,33 @@ class PostProcView(APIView):
         out.sort(key=lambda x: -x['postproc'])
         return Response(out)
 
+    def Hb(self,numEscanos,options):
+
+        votosTotales = 0
+        for x in options:
+            x['postproc'] = 0
+            votosTotales += x['votes']
+       
+        if votosTotales > 0 and numEscanos > 0:
+            escanosRep = 0
+            cociente = votosTotales/(numEscanos+1)
+
+            for o in options:
+                escanosAsignados = math.trunc(o['votes']/cociente)
+                o['postproc'] = escanosAsignados
+                escanosRep+= escanosAsignados
+
+            while(escanosRep < numEscanos): #Si sobra escaño se le asigna al primero
+                
+                options.sort(key=lambda x : -x['postproc'])
+                options[0].update({'postproc' : options[0]['postproc']+1})    
+                escanosRep += 1
+
+        options.sort(key=lambda x: -x['postproc'])
+        return Response(options)
+            
+
+
 
     def multiPreguntas(self, questions):
         for question in questions:
@@ -279,5 +306,7 @@ class PostProcView(APIView):
             return self.pesoPorPreguntas(opts)
         elif t == 'SAINTELAGUE':
             return self.saintelague(opts,numEscanos)
+        elif t == 'HB':
+            return self.Hb(options=opts, numEscanos=numEscanos)
 
         return Response({})
