@@ -1500,6 +1500,31 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
+    def testHb(self):
+        data = {
+            'type': 'HB',
+            'options': [
+                {'option':'Partido A','number':1,'votes': 100000},
+                {'option':'Partido B', 'number':2,'votes': 80000},
+                {'option':'Partido C', 'number':3,'votes': 30000},
+                {'option':'Partido D', 'number':4,'votes': 20000}
+            ],
+            'numEscanos': 8     #cociente = 25555,56
+        }
+
+        expected_result = [
+            {'option':'Partido A','number':1,'votes': 100000,'postproc':4},
+            {'option':'Partido B', 'number':2,'votes': 80000,'postproc':3},
+            {'option':'Partido C', 'number':3,'votes': 30000,'postproc':1},
+            {'option':'Partido D', 'number':4,'votes': 20000,'postproc':0}
+        ]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
 
 
 
